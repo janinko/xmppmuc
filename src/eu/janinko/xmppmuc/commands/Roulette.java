@@ -38,15 +38,15 @@ public class Roulette implements Command{
 		return "roulette";
 	}
 
-	public void handle(Message m) {
-		String command = mucc.hGetCommand(m);
+	public void handle(Message m, String[] args) {
 		String nick = MucCommands.hGetNick(m);
 		
-		if(command.equals("roulette restart")){
+		if(args.length == 2 && args[1].equals("restart")){
 			deadNicks.clear();
 			chamber = 1;
 			lastNick = "";
 		}
+		
 		MultiUserChat muc = mucc.getMuc();
 		try {
 			if(deadNicks.contains(nick)){
@@ -72,6 +72,7 @@ public class Roulette implements Command{
 				lastNick=nick;
 			}
 		} catch (XMPPException e) {
+			System.err.println("Roulette.handle() A");
 			e.printStackTrace();
 		}
 		

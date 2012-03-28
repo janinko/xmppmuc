@@ -88,8 +88,8 @@ public class PacketListenerConsole implements PacketListener{
 	
 
 	private static String getPrintableTime(Calendar c){
-		return (c.get(Calendar.HOUR)   < 10? "0" : "" ) + c.get(Calendar.HOUR)   + ":" + 
-		       (c.get(Calendar.MINUTE) < 10? "0" : "" ) + c.get(Calendar.MINUTE) + ":" + 
-		       (c.get(Calendar.SECOND) < 10? "0" : "" ) + c.get(Calendar.SECOND);
+		return (c.get(Calendar.HOUR_OF_DAY) < 10? "0" : "" ) + c.get(Calendar.HOUR_OF_DAY)   + ":" + 
+		       (c.get(Calendar.MINUTE)      < 10? "0" : "" ) + c.get(Calendar.MINUTE) + ":" + 
+		       (c.get(Calendar.SECOND)      < 10? "0" : "" ) + c.get(Calendar.SECOND);
 	}
 }

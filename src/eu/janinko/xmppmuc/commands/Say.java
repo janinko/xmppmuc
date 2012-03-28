@@ -23,16 +23,15 @@ public class Say implements Command{
 		return "say";
 	}
 
-	public void handle(Message m) {
-		String command = mucc.hGetCommand(m);
-	
+	public void handle(Message m, String[] args) {
 		try {
-			if(command.length() < 4){
+			if(args.length == 1){
 				mucc.getMuc().sendMessage("pff");
 			}else{
-				mucc.getMuc().sendMessage(command.substring(4));
+				mucc.getMuc().sendMessage(mucc.hGetCommand(m).substring(getCommand().length()+1));
 			}
 		} catch (XMPPException e) {
+			System.err.println("Say.handle() A");
 			e.printStackTrace();
 		}
 	}

@@ -38,6 +38,7 @@ public class PluginManager {
 				sb.append(c.getCommand());
 				sb.append(", ");
 			} catch (PluginBuildException e) {
+				System.err.println("PluginManager.loadPlugins() A");
 				e.printStackTrace();
 			}
 		}
@@ -53,6 +54,7 @@ public class PluginManager {
 			try {
 				urls.add(f.toURI().toURL());
 			} catch (MalformedURLException e) {
+				System.err.println("PluginManager.loadPlugin() A");
 				e.printStackTrace();
 				return false;
 			}
@@ -62,18 +64,30 @@ public class PluginManager {
 			Class clazz = classLoader.loadClass(binaryName);
 			Object o = clazz.newInstance();
 			Command c = (Command) o;
-			commands.put(c.getCommand(),c.build(mucc));
-			System.out.println("NACTENO: " + c.getCommand());
+
+			
+			Command in = c.build(mucc);
+
+			if(in == null){
+				return false;
+			}
+			
+			commands.put(in.getCommand(),in);
+			System.out.println("NACTENO: " + in.getCommand());
 		} catch (ClassNotFoundException e1) {
+			System.err.println("PluginManager.loadPlugin() B");
 			e1.printStackTrace();
 			return false;
 		} catch (InstantiationException e) {
+			System.err.println("PluginManager.loadPlugin() C");
 			e.printStackTrace();
 			return false;
 		} catch (IllegalAccessException e) {
+			System.err.println("PluginManager.loadPlugin() D");
 			e.printStackTrace();
 			return false;
 		} catch (PluginBuildException e) {
+			System.err.println("PluginManager.loadPlugin() E");
 			e.printStackTrace();
 			return false;
 		}
@@ -83,7 +97,7 @@ public class PluginManager {
 	
 	public boolean removeCommand(String command){
 		if(!commands.containsKey(command))
-			return true;
+			return false;
 		commands.get(command).destroy();
 		commands.remove(command);
 		return true;
@@ -97,8 +111,10 @@ public class PluginManager {
 				loadPlugin(line);
 			}
 		} catch (FileNotFoundException e) {
+			System.err.println("PluginManager.loadPluginsFromConfigFile() A");
 			e.printStackTrace();
 		} catch (IOException e) {
+			System.err.println("PluginManager.loadPluginsFromConfigFile() B");
 			e.printStackTrace();
 		}
 	}
@@ -121,24 +137,27 @@ public class PluginManager {
 				}
 			}
 		} catch (XMPPException e) {
+			System.err.println("PluginManager.handleCommand() A");
 			e.printStackTrace();
 		}
 	}
 
 	public boolean startPlugin(String command) {
 		if(commands.containsKey(command))
-			return true;
+			return false;
 		for(Command c : ServiceLoader.load(Command.class)){
 			if(c.getCommand().equals(command)){
 				try {
 					commands.put(c.getCommand(),c.build(mucc));
+					return true;
 				} catch (PluginBuildException e) {
+					System.err.println("PluginManager.startPlugin() A");
 					e.printStackTrace();
 					return false;
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public Collection<Command> getCommands() {

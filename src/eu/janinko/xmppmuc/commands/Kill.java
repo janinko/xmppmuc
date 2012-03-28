@@ -22,11 +22,11 @@ public class Kill implements Command {
 
 	@Override
 	public int getPrivLevel() {
-		return 100;
+		return 20;
 	}
 
 	@Override
-	public void handle(Message m) {
+	public void handle(Message m, String[] args) {
 		Runtime.getRuntime() .exit(0);
 	}
 

@@ -60,8 +60,10 @@ public class RssReader  implements Runnable {
 				}
 			}
 		} catch (YarfrawException e) {
+			System.err.println("RssReader.getLastest() A");
 			e.printStackTrace();
 		} catch (ParseException e) {
+			System.err.println("RssReader.getLastest() B");
 			e.printStackTrace();
 		}
 		return new Date(max.getTime()-1);
@@ -107,9 +109,11 @@ public class RssReader  implements Runnable {
 			}
 			lastUpdate = new Date(max.getTime());
 		} catch (YarfrawException e) {
-			e.printStackTrace();
+			System.err.println("YarfrawException A: " + e.getMessage());
+			//e.printStackTrace();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			System.err.println("ParseException B: " + e.getMessage());
+			//e.printStackTrace();
 		}
 		
 	}
@@ -125,6 +129,7 @@ public class RssReader  implements Runnable {
 				Thread.sleep(1000*60*5);
 			}
 		} catch (InterruptedException e) {
+			System.err.println("RssReader.run() A");
 		}
 	}
 	

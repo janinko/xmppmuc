@@ -23,6 +23,7 @@ public class ChatManagerListenerMucCommand implements ChatManagerListener {
 			try {
 				chat.sendMessage("Přijímám zprávy jen od lidí z konference!");
 			} catch (XMPPException e) {
+				System.err.println("MucCommands.cHelp() A");
 				e.printStackTrace();
 			}
 			return;

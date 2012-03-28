@@ -10,7 +10,7 @@ public interface Command {
 	
 	String getCommand();
 	
-	void handle(Message m);
+	void handle(Message m, String[] args);
 
 	String help(String prefix);
 	

@@ -38,18 +38,17 @@ public class Privset implements Command {
 		return 100;
 	}
 
-	public void handle(Message m) {
-		String command = mucc.hGetCommand(m);
-		
-		if(command.matches("privset [A-Za-z.-]*@[A-Za-z.-]* = [0-9-]*")){
-			String[] prikaz = command.split("=");
-			String jid = prikaz[0].substring(8, prikaz[0].length()-1);
-			String priv = prikaz[1].substring(1);
+	public void handle(Message m, String[] args) {
 
-			configManager.setConfig("jid", jid, priv);
-			System.out.println("Práva pro " + jid + " byla nastaven na: " + priv);
-			mucc.privSet(jid, Integer.decode(priv));
-		}
+		if(args.length != 3) return;
+
+		if(!args[1].matches("[A-Za-z.-]+@[A-Za-z.-]+.[a-z]+")) return;
+		
+		if(!args[2].matches("-?[0-9]+")) return;
+		
+		configManager.setConfig("jid", args[1], args[2]);
+		mucc.privSet(args[1], Integer.decode(args[2]));
+		System.out.println("Práva pro " + args[1] + " byla nastaven na: " + args[2]);
 	}
 
 	public String help(String prefix) {
