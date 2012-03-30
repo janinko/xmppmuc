@@ -66,7 +66,6 @@ public class Pozdrav implements PresenceCommand{
 				mucc.getMuc().sendMessage(this.help(mucc.getPrefix()));
 			}
 		} catch (XMPPException e) {
-			System.err.println("Pozdrav.handle() A");
 			e.printStackTrace();
 		}
 	}

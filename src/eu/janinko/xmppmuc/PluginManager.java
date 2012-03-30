@@ -46,7 +46,6 @@ public class PluginManager {
 		System.out.println(sb.toString());
 	}
 	
-	@SuppressWarnings("unchecked")
 	public boolean loadPlugin(String binaryName){
 		File pluginDirectory = new File(System.getProperty("user.home") + "/.xmppmuc/plugins/jar/");
 		ArrayList<URL> urls = new ArrayList<URL>();
