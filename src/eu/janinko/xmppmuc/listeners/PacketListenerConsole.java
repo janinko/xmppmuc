@@ -1,6 +1,8 @@
-package eu.janinko.xmppmuc;
+package eu.janinko.xmppmuc.listeners;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,6 +16,9 @@ import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.packet.DelayInformation;
+
+import eu.janinko.xmppmuc.MucCommands;
+import eu.janinko.xmppmuc.MucSeer;
 
 public class PacketListenerConsole implements PacketListener{
 	private MucCommands mucc;
@@ -35,6 +40,7 @@ public class PacketListenerConsole implements PacketListener{
 
 	@Override
 	public void processPacket(Packet packet) {
+		System.out.println("Packet + " + (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.S")).format(new Date()));
 		String nick = packet.getFrom().split("/")[1];
 		PacketExtension px = packet.getExtension("jabber:x:delay");
 		Calendar c = new GregorianCalendar();
@@ -88,8 +94,8 @@ public class PacketListenerConsole implements PacketListener{
 	
 
 	private static String getPrintableTime(Calendar c){
-		return (c.get(Calendar.HOUR)   < 10? "0" : "" ) + c.get(Calendar.HOUR)   + ":" + 
-		       (c.get(Calendar.MINUTE) < 10? "0" : "" ) + c.get(Calendar.MINUTE) + ":" + 
-		       (c.get(Calendar.SECOND) < 10? "0" : "" ) + c.get(Calendar.SECOND);
+		return (c.get(Calendar.HOUR_OF_DAY) < 10? "0" : "" ) + c.get(Calendar.HOUR_OF_DAY)   + ":" + 
+		       (c.get(Calendar.MINUTE)      < 10? "0" : "" ) + c.get(Calendar.MINUTE) + ":" + 
+		       (c.get(Calendar.SECOND)      < 10? "0" : "" ) + c.get(Calendar.SECOND);
 	}
 }

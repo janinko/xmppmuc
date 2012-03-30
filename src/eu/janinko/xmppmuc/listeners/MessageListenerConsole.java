@@ -1,4 +1,4 @@
-package eu.janinko.xmppmuc;
+package eu.janinko.xmppmuc.listeners;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;

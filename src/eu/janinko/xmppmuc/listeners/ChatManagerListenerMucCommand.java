@@ -1,10 +1,12 @@
-package eu.janinko.xmppmuc;
+package eu.janinko.xmppmuc.listeners;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+
+import eu.janinko.xmppmuc.MucCommands;
 
 public class ChatManagerListenerMucCommand implements ChatManagerListener {
 	private String room;

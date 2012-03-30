@@ -1,17 +1,30 @@
 package eu.janinko.xmppmuc;
 
 import java.io.IOException;
+import java.net.URL;
 
-import org.apache.commons.httpclient.URIException;
-import org.jivesoftware.smack.XMPPConnection;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.log4j.Logger;
+import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
+import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
-import yarfraw.core.datamodel.YarfrawException;
+import eu.janinko.xmppmuc.listeners.ChatManagerListenerMucCommand;
+import eu.janinko.xmppmuc.listeners.ConnectionListenerImpl;
+import eu.janinko.xmppmuc.listeners.InvitationRejectionListenerImpl;
+import eu.janinko.xmppmuc.listeners.PacketListenerConsole;
+import eu.janinko.xmppmuc.listeners.PacketListenerImpl;
+import eu.janinko.xmppmuc.listeners.ParticipantStatusListenerImpl;
+import eu.janinko.xmppmuc.listeners.SubjectUpdatedListenerImpl;
+import eu.janinko.xmppmuc.listeners.UserStatusListenerImpl;
 
 public class Xmppmuc {
-	private XMPPConnection connection;
+	private XMPPConnection2 connection;
 	private MultiUserChat muc;
+	private ConnectionConfiguration conf;
 	
 	private String server;
 	private String prefix;
@@ -19,6 +32,8 @@ public class Xmppmuc {
 	private String pass;
 	private String room;
 	private String nick;
+	
+	private static Logger logger = Logger.getLogger(Xmppmuc.class);
 
 	public Xmppmuc() {
 		
@@ -26,7 +41,17 @@ public class Xmppmuc {
 	}
 	
 	public boolean connect(){
-		connection = new XMPPConnection(server);
+		//Connection.DEBUG_ENABLED = true;
+
+		conf = new ConnectionConfiguration(server);
+		conf.setCompressionEnabled(true);
+		//conf.setDebuggerEnabled(true);
+		conf.setReconnectionAllowed(true);
+		conf.setRosterLoadedAtLogin(false);
+		conf.setSecurityMode(SecurityMode.enabled);
+		conf.setSendPresence(false);
+		
+		connection = new XMPPConnection2(conf);
 		try {
 			connection.connect();
 			connection.login(jid,pass);
@@ -35,6 +60,9 @@ public class Xmppmuc {
 			connection = null;
 			return false;
 		}
+		connection.addConnectionListener(new ConnectionListenerImpl(this));
+		
+		
 	    muc = new MultiUserChat(connection, room);
 	    try {
 			muc.join(nick);
@@ -44,6 +72,12 @@ public class Xmppmuc {
 			connection = null;
 			return false;
 		}
+	    muc.addUserStatusListener(new UserStatusListenerImpl(this));
+	    muc.addInvitationRejectionListener(new InvitationRejectionListenerImpl(this));
+	    muc.addMessageListener(new PacketListenerImpl(this));
+	    muc.addParticipantListener(new PacketListenerImpl(this));
+	    muc.addParticipantStatusListener(new ParticipantStatusListenerImpl(this));
+	    muc.addSubjectUpdatedListener(new SubjectUpdatedListenerImpl(this));
 	    
 		MucCommands mucCommands = new MucCommands(prefix);
 		MucSeer mucSeer = new MucSeer();
@@ -65,17 +99,19 @@ public class Xmppmuc {
 		
 
 	    try {
-			RssReader.lunchRssFeed("http://www.andaria.cz/rss_trubaci.php",muc,"Trubači");
-		    RssReader.lunchRssFeed("http://www.andaria.cz/rss_prohresky.php",muc,"Prohřešky",
+			RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_novinky.php"),muc,"Novinky");
+			RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_trubaci.php"),muc,"Trubači");
+		    RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_prohresky.php"),muc,"Prohřešky",
 		               RssReader.AUTHOR | RssReader.CONTENT | RssReader.LINK | RssReader.TITLE);
-		} catch (URIException e) {
-			e.printStackTrace();
-		} catch (YarfrawException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
 		}
-		
+
+		for(ConnectionListener  cl : connection.getConnectionListeners()){
+			System.out.println(cl + " --- " + cl.getClass());
+		}
 		
 		return true;
 	}
@@ -104,11 +140,20 @@ public class Xmppmuc {
 		this.nick=nick;
 	}
 
+	public String getNick() {
+		return nick;
+	}
+
 	public void sendMessage(String message) {
 		try {
 			muc.sendMessage(message);
 		} catch (XMPPException e) {
 			e.printStackTrace();
 		}
+	}
+	
+
+	public MultiUserChat getMuc() {
+		return muc;
 	}
 }
