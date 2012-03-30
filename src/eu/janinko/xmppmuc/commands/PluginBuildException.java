@@ -13,4 +13,12 @@ public class PluginBuildException extends Exception {
 		super(e);
 	}
 
+	public PluginBuildException() {
+		super();
+	}
+
+	public PluginBuildException(String string) {
+		super(string);
+	}
+
 }

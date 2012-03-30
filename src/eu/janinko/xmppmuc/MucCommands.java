@@ -60,7 +60,7 @@ public class MucCommands {
 		for(Command c : pm.getCommands()){
 			if(command.startsWith(c.getCommand())){
 				if(c.getPrivLevel() <= ppriv ){
-					c.handle(m);
+					c.handle(m,splitToArgs(command));
 				}
 			}
 		}
@@ -77,6 +77,7 @@ public class MucCommands {
 			prikazy += prefix + "pm, " + prefix + "help, " + prefix + "commands";
 			muc.sendMessage(prikazy);
 		} catch (XMPPException e) {
+			System.err.println("MucCommands.cCommands() A");
 			e.printStackTrace();
 		}
 	}
@@ -92,6 +93,7 @@ public class MucCommands {
 					try {
 						muc.sendMessage(message);
 					} catch (XMPPException e) {
+						System.err.println("MucCommands.cHelp() A");
 						e.printStackTrace();
 					}
 				}
@@ -125,10 +127,8 @@ public class MucCommands {
 	public void privSet(String userJid, Integer decode) {
 		privs.put(userJid.toLowerCase(), decode);		
 	}
+	
+	private String[] splitToArgs(String s){
+		return s.split(" +");
+	}
 }
-
-
-
-
-
-

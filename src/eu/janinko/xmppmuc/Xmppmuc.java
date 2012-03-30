@@ -56,6 +56,7 @@ public class Xmppmuc {
 			connection.connect();
 			connection.login(jid,pass);
 		} catch (XMPPException e) {
+			System.err.println("Xmppmuc.connect() A");
 			e.printStackTrace();
 			connection = null;
 			return false;
@@ -67,6 +68,7 @@ public class Xmppmuc {
 	    try {
 			muc.join(nick);
 		} catch (XMPPException e) {
+			System.err.println("Xmppmuc.connect() B");
 			e.printStackTrace();
 			muc = null;
 			connection = null;
@@ -91,6 +93,7 @@ public class Xmppmuc {
 		    mucCommands.setMUC(muc);
 			mucSeer.setMUC(muc);
 		} catch (XMPPException e) {
+			System.err.println("Xmppmuc.connect() C");
 			e.printStackTrace();
 			muc = null;
 			connection = null;
@@ -104,6 +107,7 @@ public class Xmppmuc {
 		    RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_prohresky.php"),muc,"Prohřešky",
 		               RssReader.AUTHOR | RssReader.CONTENT | RssReader.LINK | RssReader.TITLE);
 		} catch (IOException e) {
+			System.err.println("Xmppmuc.connect() F");
 			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
@@ -148,6 +152,7 @@ public class Xmppmuc {
 		try {
 			muc.sendMessage(message);
 		} catch (XMPPException e) {
+			System.err.println("Xmppmuc.sendMessage() A");
 			e.printStackTrace();
 		}
 	}

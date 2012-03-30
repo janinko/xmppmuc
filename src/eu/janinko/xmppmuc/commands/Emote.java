@@ -23,16 +23,15 @@ public class Emote implements Command{
 		return "emote";
 	}
 
-	public void handle(Message m) {
-		String command = mucc.hGetCommand(m);
-	
+	public void handle(Message m, String[] args) {
 		try {
-			if(command.length() < 6){
+			if(args.length == 1){
 				mucc.getMuc().sendMessage("/me zije");
 			}else{
-				mucc.getMuc().sendMessage("/me " + command.substring(6));
+				mucc.getMuc().sendMessage("/me " + mucc.hGetCommand(m).substring(getCommand().length()+1));
 			}
 		} catch (XMPPException e) {
+			System.err.println("Emote.handle() A");
 			e.printStackTrace();
 		}
 	}

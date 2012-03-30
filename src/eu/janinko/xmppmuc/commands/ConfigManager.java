@@ -35,12 +35,15 @@ public class ConfigManager {
 			                    .parse(fXmlFile);
 			doc.getDocumentElement().normalize();
 		} catch (SAXException e) {
+			System.err.println("ConfigManager.ConfigManager() A");
 			e.printStackTrace();
 			doc = null;
 		} catch (IOException e) {
+			System.err.println("ConfigManager.ConfigManager() B");
 			e.printStackTrace();
 			doc = null;
 		} catch (ParserConfigurationException e) {
+			System.err.println("ConfigManager.ConfigManager() C");
 			e.printStackTrace();
 			doc = null;
 		}
@@ -100,10 +103,13 @@ public class ConfigManager {
 	     StreamResult result =  new StreamResult(new File(path));
 	     transformer.transform(source, result);
 		} catch (TransformerConfigurationException e) {
+			System.err.println("ConfigManager.setConfig() A");
 			e.printStackTrace();
 		} catch (TransformerFactoryConfigurationError e) {
+			System.err.println("ConfigManager.setConfig() B");
 			e.printStackTrace();
 		} catch (TransformerException e) {
+			System.err.println("ConfigManager.setConfig() C");
 			e.printStackTrace();
 		}
 	}
@@ -132,10 +138,13 @@ public class ConfigManager {
 	     StreamResult result =  new StreamResult(new File(path));
 	     transformer.transform(source, result);
 		} catch (TransformerConfigurationException e) {
+			System.err.println("ConfigManager.removeConfig() A");
 			e.printStackTrace();
 		} catch (TransformerFactoryConfigurationError e) {
+			System.err.println("ConfigManager.removeConfig() B");
 			e.printStackTrace();
 		} catch (TransformerException e) {
+			System.err.println("ConfigManager.removeConfig() C");
 			e.printStackTrace();
 		}
 	}
