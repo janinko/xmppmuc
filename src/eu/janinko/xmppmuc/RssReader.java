@@ -1,146 +1,178 @@
 package eu.janinko.xmppmuc;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.net.MalformedURLException;
+import java.net.NoRouteToHostException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.TreeSet;
 
-import yarfraw.io.FeedReader;
-import yarfraw.core.datamodel.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.httpclient.HttpURL;
-import org.apache.commons.httpclient.URIException;
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.xml.sax.SAXException;
+
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.SyndFeedInput;
+
+import eu.janinko.xmppmuc.listeners.UserStatusListenerImpl;
 
 public class RssReader  implements Runnable {
-	private FeedReader feedReader;
 	private Date lastUpdate; 
 	private MultiUserChat muc;
 	private String title;
 	private int flags;
 	
+	private URL url;
+	private SyndFeedInput sfInput;
+	private TreeSet<SyndEntry> newEntries;
+	
 	private static HashMap<String,Thread> threads = new HashMap<String,Thread>();
+	private static Logger logger = Logger.getLogger(RssReader.class);
 	
 	public static final int AUTHOR = 0x1;
 	public static final int LINK = 0x2;
 	public static final int TITLE = 0x4;
 	public static final int CONTENT = 0x8;
 	
-	public RssReader(String url, MultiUserChat muc, String title, int flags) throws URIException, YarfrawException, IOException {
+	
+	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+	private final DocumentBuilder docbuilder;
+	
+	public RssReader(URL url, MultiUserChat muc, String title, int flags) throws ParserConfigurationException {
+		docbuilder = dbf.newDocumentBuilder();
+		this.url = url;
+		this.sfInput = new SyndFeedInput();
+		newEntries = new TreeSet<SyndEntry>(new Comparator<SyndEntry>() {
+			@Override
+			public int compare(SyndEntry o1, SyndEntry o2) {
+				return o1.getPublishedDate().compareTo(o2.getPublishedDate());
+			}});
+		
 		this.muc = muc;
-		this.feedReader = new FeedReader(new HttpURL(url));
 		this.lastUpdate = new Date(); // getLastest(); //
 		this.title = title;
 		this.flags = flags;
-    }
+    }	
 	
-	@SuppressWarnings("unused")
-	private Date getLastest() {
-		SimpleDateFormat sdf = new SimpleDateFormat("d.M.yy, k:m", Locale.US);
-		Date max = null;
+	public static void main(String[] args){
 		try {
-			ChannelFeed channelFeed = feedReader.readChannel();
-			for(ItemEntry i : channelFeed.getItems()){
-				String isdate = i.getPubDate();
-				if(isdate == null){		// FIXME: When corrected on web, remove this hotfix
-					isdate = i.getElementByLocalName("pubdate").getFirstChild().getNodeValue();
-				}
-				Date idate = sdf.parse(isdate);
-				if(max==null){
-					max = idate;
-				}
-				if(idate.getTime() > max.getTime())
-				{
-					if(idate.getTime() > max.getTime()){
-						max = idate;
-					}
-				}
-			}
-		} catch (YarfrawException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
+			URL feedUrl = new URL("http://www.andaria.cz/rss_novinky.php");
+			RssReader r = new RssReader(feedUrl, null, "RSS", AUTHOR | LINK | TITLE | CONTENT);
+			r.read();
+			r.printNew();
+		}  catch (ParserConfigurationException e) {
+			logger.error(null, e);
+		} catch (MalformedURLException e) {
+			logger.error(null, e);
+		} catch (Exception e) {
+			logger.error(null, e);
 		}
-		return new Date(max.getTime()-1);
-	}
+			
 
-	public void printNew() throws XMPPException{
-		SimpleDateFormat sdf = new SimpleDateFormat("d.M.yy, k:m", Locale.US);
+	}
+	
+	private void read(){
+		SyndFeed feed;
 		try {
-			ChannelFeed channelFeed = feedReader.readChannel();
-			Date max = lastUpdate;
-			for(ItemEntry i : channelFeed.getItems()){
-				String isdate = i.getPubDate();
-				if(isdate == null){		// FIXME: When corrected on web, remove this hotfix
-					isdate = i.getElementByLocalName("pubdate").getFirstChild().getNodeValue();
-				}
-				Date idate = sdf.parse(isdate);
-				if(idate.getTime() > lastUpdate.getTime())
-				{
-					if(idate.getTime() > max.getTime()){
-						max = idate;
-					}
-					String content = i.getDescriptionOrSummaryText();
-					if(content.length() > 220){
-						content = content.substring(0, 180) + "... ";
-					}
-					String send = title + ": ";
-					if((flags & LINK) != 0){
-						send += i.getLinks().get(0).getHref();
-					}
-					send += "\n";
-					if((flags & TITLE) != 0){
-						send += i.getTitleText() + "\n";
-					}
-					if((flags & CONTENT) != 0){
-						send += content;
-					}
-					if((flags & AUTHOR) != 0){
-						send += " | " + i.getAuthorOrCreator().get(0).getEmailOrText();
-					}
-					
-					muc.sendMessage(send);
+			feed = sfInput.build(docbuilder.parse(url.openConnection().getInputStream()));
+			for(Object a : feed.getEntries() ){
+				SyndEntry e = (SyndEntry) a;
+				if(e.getPublishedDate().compareTo(lastUpdate) > 0){
+					newEntries.add(e);
 				}
 			}
-			lastUpdate = new Date(max.getTime());
-		} catch (YarfrawException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
+			lastUpdate = new Date();
+		} catch (IllegalArgumentException e1) {
+			logger.error("Exception IllegalArgumentException in RssReader.read()", e1);
+		} catch (FeedException e1) {
+			logger.error("Exception FeedException in RssReader.read()", e1);
+		} catch (SAXException e1) {
+			logger.error("Exception SAXException in RssReader.read()", e1);
+		} catch (IOException e1) {
+			if(e1.getClass().equals(UnknownHostException.class)){
+				logger.warn("Failed to read feed", e1);
+			}else if(e1.getClass().equals(NoRouteToHostException.class)){
+				logger.warn("Failed to read feed", e1);
+			}else{
+				logger.error("Exception IOException in RssReader.read()", e1);
+			}
 		}
-		
+	}
+	
+	private void printNew(){
+		if(newEntries.isEmpty()) return;
+		StringBuilder sb = new StringBuilder(title);
+		sb.append(": ");
+		for(SyndEntry e : newEntries){
+			if((flags & LINK) != 0){
+				sb.append(e.getLink());
+			}
+			sb.append('\n');
+			if((flags & TITLE) != 0){
+				sb.append( e.getTitle());
+				sb.append('\n');
+			}
+			if((flags & CONTENT) != 0){
+				String content = e.getDescription().getValue();
+
+				if(content.length() > 220){
+					content = content.substring(0, 180) + "... ";
+				}
+				sb.append(content);
+			}
+			if((flags & AUTHOR) != 0){
+				sb.append(" | ");
+				sb.append(e.getAuthor());
+			}
+		}
+		newEntries.clear();
+
+		try {
+			muc.sendMessage(sb.toString());
+		} catch (XMPPException e) {
+			logger.error(null, e);
+		}
 	}
 	
 	public void run(){
 		try {
 			while(true){
 				try{
+					read();
 					printNew();
-				} catch (XMPPException e) {
-					e.printStackTrace();
+				} catch (Exception e) {
+					logger.error(null, e);
 				}
 				Thread.sleep(1000*60*5);
 			}
 		} catch (InterruptedException e) {
+			logger.debug(null, e);
 		}
 	}
 	
 
-	public static void lunchRssFeed(String url, MultiUserChat muc, String title, int flags) throws URIException, YarfrawException, IOException{
+	public static void lunchRssFeed(URL url, MultiUserChat muc, String title, int flags) throws ParserConfigurationException {
 		Thread newThread = new Thread(new RssReader(url, muc, title, flags), title);
 		newThread.start();
 		threads.put(title, newThread);		
 	}
-	public static void lunchRssFeed(String url, MultiUserChat muc, String title) throws URIException, YarfrawException, IOException{
+	public static void lunchRssFeed(URL url, MultiUserChat muc, String title) throws ParserConfigurationException{
 		lunchRssFeed(url,muc,title,LINK | TITLE | CONTENT);
 	}
-	public static void lunchRssFeed(String url, MultiUserChat muc, int flags) throws URIException, YarfrawException, IOException{
+	public static void lunchRssFeed(URL url, MultiUserChat muc, int flags) throws ParserConfigurationException{
 		lunchRssFeed(url,muc,"RSS",flags);
 	}
-	public static void lunchRssFeed(String url, MultiUserChat muc) throws URIException, YarfrawException, IOException{
+	public static void lunchRssFeed(URL url, MultiUserChat muc) throws ParserConfigurationException{
 		lunchRssFeed(url,muc,"RSS",LINK | TITLE | CONTENT);
 	}
 
