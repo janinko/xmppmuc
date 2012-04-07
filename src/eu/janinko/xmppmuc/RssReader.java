@@ -24,8 +24,6 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedInput;
 
-import eu.janinko.xmppmuc.listeners.UserStatusListenerImpl;
-
 public class RssReader  implements Runnable {
 	private Date lastUpdate; 
 	private MultiUserChat muc;
@@ -134,7 +132,9 @@ public class RssReader  implements Runnable {
 				sb.append(" | ");
 				sb.append(e.getAuthor());
 			}
+			sb.append('\n');
 		}
+		sb.deleteCharAt(sb.length()-1);
 		newEntries.clear();
 
 		try {
