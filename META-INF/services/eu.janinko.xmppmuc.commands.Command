@@ -5,3 +5,4 @@ eu.janinko.xmppmuc.commands.Privset
 eu.janinko.xmppmuc.commands.Roulette
 eu.janinko.xmppmuc.commands.Say
 eu.janinko.xmppmuc.commands.Changelog
+eu.janinko.xmppmuc.PluginManagerCommand

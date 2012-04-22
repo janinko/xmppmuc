@@ -14,23 +14,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.jivesoftware.smack.XMPPException;
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Message;
 
 import eu.janinko.xmppmuc.commands.Command;
 import eu.janinko.xmppmuc.commands.PluginBuildException;
 
-public class PluginManager {
+public class PluginManager{
 	private MucCommands mucc;
 	private Map<String, Command> commands;
-	
+	private String pluginDirectoryPath = System.getProperty("user.home") + "/.xmppmuc/plugins/jar/";
+
+	private static Logger logger = Logger.getLogger(PluginManager.class);
 	
 	public PluginManager(MucCommands mucCommands) {
 		this.mucc = mucCommands;
 		commands = new HashMap<String, Command>();
 	}
 
-	public void loadPlugins(){
+	void loadPlugins(){
 		StringBuilder sb = new StringBuilder("Loaded plugins: ");
 		for(Command c : ServiceLoader.load(Command.class)){
 			try {
@@ -38,63 +40,64 @@ public class PluginManager {
 				sb.append(c.getCommand());
 				sb.append(", ");
 			} catch (PluginBuildException e) {
-				System.err.println("PluginManager.loadPlugins() A");
-				e.printStackTrace();
+				logger.error("loadPlugins", e);
 			}
 		}
 		sb.delete(sb.length()-2,sb.length());
-		System.out.println(sb.toString());
+		logger.info(sb.toString());
 	}
 	
-	public boolean loadPlugin(String binaryName){
-		File pluginDirectory = new File(System.getProperty("user.home") + "/.xmppmuc/plugins/jar/");
+	boolean loadPlugin(String binaryName){
+		File pluginDirectory = new File(pluginDirectoryPath);
+		
 		ArrayList<URL> urls = new ArrayList<URL>();
 		for(File f : pluginDirectory.listFiles()){
 			try {
 				urls.add(f.toURI().toURL());
 			} catch (MalformedURLException e) {
-				System.err.println("PluginManager.loadPlugin() A");
-				e.printStackTrace();
+				logger.error("loadPlugin", e);
 				return false;
 			}
 		}
+		
 		URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+
+		Class clazz;
 		try {
-			Class clazz = classLoader.loadClass(binaryName);
-			Object o = clazz.newInstance();
-			Command c = (Command) o;
-
-			
-			Command in = c.build(mucc);
-
-			if(in == null){
-				return false;
-			}
-			
-			commands.put(in.getCommand(),in);
-			System.out.println("NACTENO: " + in.getCommand());
-		} catch (ClassNotFoundException e1) {
-			System.err.println("PluginManager.loadPlugin() B");
-			e1.printStackTrace();
+			clazz = classLoader.loadClass(binaryName);
+		} catch (ClassNotFoundException e) {
+			logger.error("loadPlugin", e);
 			return false;
+		}
+
+		Object o;
+		try {
+			o = clazz.newInstance();
 		} catch (InstantiationException e) {
-			System.err.println("PluginManager.loadPlugin() C");
-			e.printStackTrace();
+			logger.error("loadPlugin", e);
 			return false;
 		} catch (IllegalAccessException e) {
-			System.err.println("PluginManager.loadPlugin() D");
-			e.printStackTrace();
-			return false;
-		} catch (PluginBuildException e) {
-			System.err.println("PluginManager.loadPlugin() E");
-			e.printStackTrace();
+			logger.error("loadPlugin", e);
 			return false;
 		}
 		
+		Command in = null;
+		try {
+			in = ((Command) o).build(mucc);
+		} catch (PluginBuildException e) {
+			logger.error("loadPlugin", e);
+			return false;
+		}
+		if(in == null){
+			return false;
+		}
+
+		commands.put(in.getCommand(),in);
+		logger.debug("NACTENO: " + in.getCommand());
 		return true;
 	}
 	
-	public boolean removeCommand(String command){
+	boolean removeCommand(String command){
 		if(!commands.containsKey(command))
 			return false;
 		commands.get(command).destroy();
@@ -114,29 +117,6 @@ public class PluginManager {
 			e.printStackTrace();
 		} catch (IOException e) {
 			System.err.println("PluginManager.loadPluginsFromConfigFile() B");
-			e.printStackTrace();
-		}
-	}
-
-	public void handleCommand(Message m) {
-		String command = mucc.hGetCommand(m);
-		String[] args = command.split(" ");
-		try {
-			if(args[1].equals("stop")){
-				if(removeCommand(args[2])){
-					mucc.getMuc().sendMessage("Plugin " + args[2] + " byl zastaven.");
-				}
-			}else if(args[1].equals("load")){
-				if(loadPlugin(args[2])){
-					mucc.getMuc().sendMessage("Plugin " + args[2] + " byl načten.");
-				}
-			}else if(args[1].equals("start")){
-				if(startPlugin(args[2])){
-					mucc.getMuc().sendMessage("Plugin " + args[2] + " byl spuštěn.");
-				}
-			}
-		} catch (XMPPException e) {
-			System.err.println("PluginManager.handleCommand() A");
 			e.printStackTrace();
 		}
 	}
@@ -162,5 +142,4 @@ public class PluginManager {
 	public Collection<Command> getCommands() {
 		return commands.values();
 	}
-
 }

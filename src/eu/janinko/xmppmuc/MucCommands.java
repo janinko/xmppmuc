@@ -16,7 +16,7 @@ public class MucCommands {
 	private MultiUserChat muc;
 	private String prefix;
 	private Map<String,Integer> privs;
-	private PluginManager pm;
+	PluginManager pm;
 	
 	public MucCommands(String prefix){
 		muc = null;
@@ -54,8 +54,6 @@ public class MucCommands {
 			cCommands();
 		}else if(command.startsWith("help")){
 			cHelp(command);
-		}else if(command.startsWith("pm") && ppriv >= 100){
-			pm.handleCommand(m);
 		}
 		for(Command c : pm.getCommands()){
 			if(command.startsWith(c.getCommand())){
