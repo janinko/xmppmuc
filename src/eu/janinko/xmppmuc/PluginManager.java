@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
 import org.apache.log4j.Logger;
-import org.jivesoftware.smack.packet.Message;
 
 import eu.janinko.xmppmuc.commands.Command;
 import eu.janinko.xmppmuc.commands.PluginBuildException;
@@ -34,14 +34,21 @@ public class PluginManager{
 
 	void loadPlugins(){
 		StringBuilder sb = new StringBuilder("Loaded plugins: ");
-		for(Command c : ServiceLoader.load(Command.class)){
-			try {
-				commands.put(c.getCommand(),c.build(mucc));
-				sb.append(c.getCommand());
-				sb.append(", ");
-			} catch (PluginBuildException e) {
-				logger.error("loadPlugins", e);
+		try{
+			for(Command c : ServiceLoader.load(Command.class)){
+				try {
+					commands.put(c.getCommand(),c.build(mucc));
+					sb.append(c.getCommand());
+					sb.append(", ");
+				} catch (PluginBuildException e) {
+					logger.error("loadPlugins", e);
+				}
 			}
+		}catch(ServiceConfigurationError e){
+			if(e.getCause() instanceof InstantiationException){
+				logger.error("Can't instantiate class. Does it have simple constructor?", e);
+			}
+			logger.error("loadPlugins", e);
 		}
 		sb.delete(sb.length()-2,sb.length());
 		logger.info(sb.toString());
