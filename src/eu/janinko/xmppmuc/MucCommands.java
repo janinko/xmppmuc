@@ -1,7 +1,5 @@
 package eu.janinko.xmppmuc;
 
-import eu.janinko.xmppmuc.commands.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +8,11 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.ParticipantStatusListener;
+
+import eu.janinko.xmppmuc.commands.Command;
+import eu.janinko.xmppmuc.commands.MessageCommand;
+import eu.janinko.xmppmuc.commands.PresenceCommand;
 
 
 public class MucCommands {
@@ -72,7 +75,7 @@ public class MucCommands {
 			for(Command c : pm.getCommands()){
 				prikazy += prefix + c.getCommand() + ", ";				
 			}
-			prikazy += prefix + "pm, " + prefix + "help, " + prefix + "commands";
+			prikazy += prefix + "help, " + prefix + "commands";
 			muc.sendMessage(prikazy);
 		} catch (XMPPException e) {
 			System.err.println("MucCommands.cCommands() A");
@@ -106,6 +109,15 @@ public class MucCommands {
 			if (c instanceof PresenceCommand){
 				PresenceCommand pc = (PresenceCommand) c;
 				pc.handlePresence(p);
+			}
+		}
+	}
+	
+	public void handleMessage(Message m) {
+		for(Command c : pm.getCommands()){
+			if (c instanceof MessageCommand){
+				MessageCommand mc = (MessageCommand) c;
+				mc.handleMessage(m);
 			}
 		}
 	}

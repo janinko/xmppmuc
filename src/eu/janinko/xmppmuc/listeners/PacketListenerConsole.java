@@ -60,6 +60,7 @@ public class PacketListenerConsole implements PacketListener{
 			if(p.getBody().startsWith(commandPrefix) && px == null){
 				mucc.handleCommand(p);
 			}else{
+				mucc.handleMessage(p);
 				mucs.checkMessage(p);
 			}
 		}else if(packet instanceof IQ){
