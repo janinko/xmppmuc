@@ -1,15 +1,13 @@
 package eu.janinko.xmppmuc.listeners;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.XMPPException;
 
 import eu.janinko.xmppmuc.Xmppmuc;
 
 public class ConnectionListenerImpl implements ConnectionListener {
 	Xmppmuc xmppmuc;
+	private static Logger logger = Logger.getLogger(ConnectionListenerImpl.class);
 
 	public ConnectionListenerImpl(Xmppmuc xmppmuc) {
 		this.xmppmuc = xmppmuc;
@@ -17,37 +15,35 @@ public class ConnectionListenerImpl implements ConnectionListener {
 
 	@Override
 	public void connectionClosed() {
-		System.out.println("ConnectionListenerImpl.connectionClosed()");
+		logger.trace("connectionClosed");
 	}
 
 	@Override
 	public void connectionClosedOnError(Exception e) {
-		System.out.println("ConnectionListenerImpl.connectionClosedOnError(Exception e="+e+"):");
-		e.printStackTrace();
-		System.out.println(":ConnectionListenerImpl.connectionClosedOnError(Exception e="+e+")");
+		logger.warn("connectionClosedOnError", e);
 	}
 
 	@Override
 	public void reconnectingIn(int seconds) {
-		System.out.println("ConnectionListenerImpl.reconnectingIn(int seconds="+seconds+")");
+		logger.trace("Reconnecting in "+seconds+" seconds");
 	}
 
 	@Override
 	public void reconnectionFailed(Exception e) {
-		System.out.println("ConnectionListenerImpl.connectionClosedOnError(Exception e="+e+"):");
-		e.printStackTrace();
-		System.out.println(":ConnectionListenerImpl.connectionClosedOnError(Exception e="+e+")");
+		logger.warn("reconnectionFailed",e);
 	}
 
 	@Override
 	public void reconnectionSuccessful() {
-		System.out.println("ConnectionListenerImpl.reconnectionSuccessful()");
-		try {
-			System.out.println("PreJoin + " + (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.S")).format(new Date()));
-			xmppmuc.getMuc().join(xmppmuc.getNick());
-			System.out.println("PastJoin + " + (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.S")).format(new Date()));
-		} catch (XMPPException e) {
-			e.printStackTrace();
+		logger.trace("reconnectionSuccessful");
+		int retry=3;
+		while(retry-- > 0 && !xmppmuc.connectToMUC()){
+			logger.error("failet to re-join MUC");
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				logger.error("Unexcepted interuption", e);
+			}
 		}
 	}
 

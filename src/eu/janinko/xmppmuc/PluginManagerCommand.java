@@ -1,25 +1,27 @@
 package eu.janinko.xmppmuc;
 
-import org.jivesoftware.smack.XMPPException;
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Message;
 
 import eu.janinko.xmppmuc.commands.Command;
 import eu.janinko.xmppmuc.commands.PluginBuildException;
 
 public class PluginManagerCommand implements Command {
-	MucCommands mucc;
+	CommandWrapper cw;
 	PluginManager pm;
+	
+	private static Logger logger = Logger.getLogger(PluginManagerCommand.class);
 	
 	public PluginManagerCommand(){};
 	
-	public PluginManagerCommand(MucCommands mucCommands){
-		mucc = mucCommands;
-		pm = mucc.pm;
+	public PluginManagerCommand(CommandWrapper commandWrapper){
+		cw = commandWrapper;
+		pm = cw.getMucCommands().pm;
 	}
 
 	@Override
-	public Command build(MucCommands mucCommands) throws PluginBuildException {
-		return new PluginManagerCommand(mucCommands);
+	public Command build(CommandWrapper cw) throws PluginBuildException {
+		return new PluginManagerCommand(cw);
 	}
 
 	@Override
@@ -29,23 +31,22 @@ public class PluginManagerCommand implements Command {
 
 	@Override
 	public void handle(Message m, String[] args) {
-		try {
-			if(args[1].equals("stop")){
-				if(pm.removeCommand(args[2])){
-					mucc.getMuc().sendMessage("Plugin " + args[2] + " byl zastaven.");
-				}
-			}else if(args[1].equals("load")){
-				if(pm.loadPlugin(args[2])){
-					mucc.getMuc().sendMessage("Plugin " + args[2] + " byl načten.");
-				}
-			}else if(args[1].equals("start")){
-				if(pm.startPlugin(args[2])){
-					mucc.getMuc().sendMessage("Plugin " + args[2] + " byl spuštěn.");
-				}
+		logger.debug("got command: " + args);
+		if(args[1].equals("stop")){
+			logger.info("request stop command: " + args[2]);
+			if(pm.removeCommand(args[2])){
+				cw.sendMessage("Plugin " + args[2] + " byl zastaven.");
 			}
-		} catch (XMPPException e) {
-			System.err.println("PluginManager.handleCommand() A");
-			e.printStackTrace();
+		}else if(args[1].equals("load")){
+			logger.info("request load command: " + args[2]);
+			if(pm.loadPlugin(args[2])){
+				cw.sendMessage("Plugin " + args[2] + " byl načten.");
+			}
+		}else if(args[1].equals("start")){
+			logger.info("request start command: " + args[2]);
+			if(pm.startPlugin(args[2])){
+				cw.sendMessage("Plugin " + args[2] + " byl spuštěn.");
+			}
 		}
 	}
 

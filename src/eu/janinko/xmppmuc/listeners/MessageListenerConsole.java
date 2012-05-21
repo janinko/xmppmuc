@@ -8,5 +8,5 @@ public class MessageListenerConsole implements MessageListener{
 	public void processMessage(Chat chat, Message message) {
 		System.out.println("Received message: " + message);
 		System.out.println(message.toXML());
-		}
+	}
 }

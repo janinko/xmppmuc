@@ -8,8 +8,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
-import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.FromMatchesFilter;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import eu.janinko.xmppmuc.listeners.ChatManagerListenerMucCommand;
@@ -22,9 +22,12 @@ import eu.janinko.xmppmuc.listeners.SubjectUpdatedListenerImpl;
 import eu.janinko.xmppmuc.listeners.UserStatusListenerImpl;
 
 public class Xmppmuc {
-	private XMPPConnection2 connection;
+	XMPPConnection2 connection;
 	private MultiUserChat muc;
 	private ConnectionConfiguration conf;
+	private MucCommands mucCommands;
+	PacketListenerConsole plc;
+	FromMatchesFilter messageFilter;
 	
 	private String server;
 	private String prefix;
@@ -38,6 +41,34 @@ public class Xmppmuc {
 	public Xmppmuc() {
 		
 		
+	}
+	
+	public boolean connectToMUC(){
+		if(logger.isTraceEnabled()){logger.trace("Connecting to muc, previous: '"+muc);}
+		if(muc != null) muc.leave();
+		muc = new MultiUserChat(connection, room);
+	    try {
+			muc.join(nick);
+		} catch (XMPPException e) {
+			logger.error("Failed connectio to muc",e);
+			muc = null;
+			return false;
+		}
+	    muc.addUserStatusListener(new UserStatusListenerImpl(this));
+	    muc.addInvitationRejectionListener(new InvitationRejectionListenerImpl(this));
+	    muc.addMessageListener(new PacketListenerImpl(this));
+	    muc.addParticipantListener(new PacketListenerImpl(this));
+	    muc.addParticipantStatusListener(new ParticipantStatusListenerImpl(this));
+	    muc.addSubjectUpdatedListener(new SubjectUpdatedListenerImpl(this));
+	    
+	    
+		connection.addPacketListener(plc, messageFilter);
+
+	    mucCommands.setMUC(muc);
+	    plc.init();
+	    
+		if(logger.isTraceEnabled()){logger.trace("Connected to muc, actual: '"+muc);}
+	    return true;
 	}
 	
 	public boolean connect(){
@@ -62,44 +93,17 @@ public class Xmppmuc {
 			return false;
 		}
 		connection.addConnectionListener(new ConnectionListenerImpl(this));
+
+		mucCommands = new MucCommands(prefix);
+		plc = new PacketListenerConsole(mucCommands);
 		
-		
-	    muc = new MultiUserChat(connection, room);
-	    try {
-			muc.join(nick);
-		} catch (XMPPException e) {
-			System.err.println("Xmppmuc.connect() B");
-			e.printStackTrace();
-			muc = null;
+		if(!connectToMUC()){
 			connection = null;
 			return false;
 		}
-	    muc.addUserStatusListener(new UserStatusListenerImpl(this));
-	    muc.addInvitationRejectionListener(new InvitationRejectionListenerImpl(this));
-	    muc.addMessageListener(new PacketListenerImpl(this));
-	    muc.addParticipantListener(new PacketListenerImpl(this));
-	    muc.addParticipantStatusListener(new ParticipantStatusListenerImpl(this));
-	    muc.addSubjectUpdatedListener(new SubjectUpdatedListenerImpl(this));
-	    
-		MucCommands mucCommands = new MucCommands(prefix);
-		MucSeer mucSeer = new MucSeer();
-	    
-	    muc.addMessageListener(new PacketListenerConsole(mucCommands, mucSeer,muc));
-	    muc.addParticipantListener(new PacketListenerConsole(mucCommands, mucSeer,muc));
+
 	    
 		connection.getChatManager().addChatListener(new ChatManagerListenerMucCommand(room,mucCommands));
-		
-	    try {
-		    mucCommands.setMUC(muc);
-			mucSeer.setMUC(muc);
-		} catch (XMPPException e) {
-			System.err.println("Xmppmuc.connect() C");
-			e.printStackTrace();
-			muc = null;
-			connection = null;
-			return false;
-		}
-		
 
 	    try {
 			RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_novinky.php"),muc,"Novinky");
@@ -113,9 +117,9 @@ public class Xmppmuc {
 			e.printStackTrace();
 		}
 
-		for(ConnectionListener  cl : connection.getConnectionListeners()){
-			System.out.println(cl + " --- " + cl.getClass());
-		}
+		//for(ConnectionListener  cl : connection.getConnectionListeners()){
+		//	System.out.println(cl + " --- " + cl.getClass());
+		//}
 		
 		return true;
 	}
@@ -138,6 +142,7 @@ public class Xmppmuc {
 
 	public void setRoom(String room) {
 		this.room=room;
+		messageFilter = new FromMatchesFilter(room);
 	}
 
 	public void setNick(String nick) {
@@ -149,6 +154,7 @@ public class Xmppmuc {
 	}
 
 	public void sendMessage(String message) {
+		logger.debug("Sending message: " + message);
 		try {
 			muc.sendMessage(message);
 		} catch (XMPPException e) {

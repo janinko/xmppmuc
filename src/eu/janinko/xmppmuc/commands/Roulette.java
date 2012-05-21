@@ -4,24 +4,23 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smackx.muc.MultiUserChat;
 
+import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.MucCommands;
 
 public class Roulette implements Command{
-	public Roulette() {}
-
-	private MucCommands mucc;
+	private CommandWrapper cw;
 	
 	private Set<String> deadNicks;
 	private int chamber;
 	private Random random;
 	private String lastNick;
 	
-	public Roulette(MucCommands mucc){
-		this.mucc = mucc;
+	public Roulette() {}
+	
+	public Roulette(CommandWrapper commandWrapper){
+		this.cw = commandWrapper;
 		deadNicks = new HashSet<String>();
 		chamber = 1;
 		random = new Random();
@@ -29,8 +28,8 @@ public class Roulette implements Command{
 	}
 	
 	@Override
-	public Command build(MucCommands mucCommands) {
-		return new Roulette(mucCommands);
+	public Command build(CommandWrapper commandWrapper) {
+		return new Roulette(commandWrapper);
 	}
 	
 
@@ -46,36 +45,30 @@ public class Roulette implements Command{
 			chamber = 1;
 			lastNick = "";
 		}
-		
-		MultiUserChat muc = mucc.getMuc();
-		try {
-			if(deadNicks.contains(nick)){
-				muc.sendMessage(nick + ": Jseš mrtvej!");
-			}else if(lastNick.equals(nick)){
-				muc.sendMessage(nick + ": Nemůžeš mačkat kohoutek dvakrat po sobě!");
+
+		if(deadNicks.contains(nick)){
+			cw.sendMessage(nick + ": Jseš mrtvej!");
+		}else if(lastNick.equals(nick)){
+			cw.sendMessage(nick + ": Nemůžeš mačkat kohoutek dvakrat po sobě!");
+		}else{
+			if(random.nextInt(7-chamber) == 0){
+				cw.sendMessage(nick + ": komora #" + chamber + " z 6 => *BANG*");
+				cw.sendMessage("/me přebil");
+				deadNicks.add(nick);
+				chamber = 1;
 			}else{
-				if(random.nextInt(7-chamber) == 0){
-					muc.sendMessage(nick + ": komora #" + chamber + " z 6 => *BANG*");
-					muc.sendMessage("/me přebil");
-					deadNicks.add(nick);
+				cw.sendMessage(nick + ": komora #" + chamber + " z 6 => +klik+");
+				if(chamber == 6){
+					cw.sendMessage("WTF?");
+					cw.sendMessage("/me přebil");
 					chamber = 1;
 				}else{
-					muc.sendMessage(nick + ": komora #" + chamber + " z 6 => +klik+");
-					if(chamber == 6){
-						muc.sendMessage("WTF?");
-						muc.sendMessage("/me přebil");
-						chamber = 1;
-					}else{
-						chamber++;
-					}
+					chamber++;
 				}
-				lastNick=nick;
 			}
-		} catch (XMPPException e) {
-			System.err.println("Roulette.handle() A");
-			e.printStackTrace();
+			lastNick=nick;
 		}
-		
+
 	}
 
 	public String help(String prefix) {

@@ -2,11 +2,11 @@ package eu.janinko.xmppmuc.commands;
 
 import org.jivesoftware.smack.packet.Message;
 
-import eu.janinko.xmppmuc.MucCommands;
+import eu.janinko.xmppmuc.CommandWrapper;
 
 public interface Command {
-	
-	Command build(MucCommands mucCommands) throws PluginBuildException;
+
+	Command build(CommandWrapper commandWrapper) throws PluginBuildException;
 	
 	String getCommand();
 	
@@ -17,4 +17,5 @@ public interface Command {
 	int getPrivLevel();
 	
 	void destroy();
+
 }

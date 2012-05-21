@@ -2,17 +2,14 @@ package eu.janinko.xmppmuc.commands;
 
 import org.jivesoftware.smack.packet.Message;
 
-import eu.janinko.xmppmuc.MucCommands;
+import eu.janinko.xmppmuc.CommandWrapper;
 
 public class Kill implements Command {
 	public Kill() {}
-
-	public Kill(MucCommands mucCommands) {
-	}
 	
 	@Override
-	public Command build(MucCommands mucCommands) {
-		return new Kill(mucCommands);
+	public Command build(CommandWrapper mucCommands) {
+		return new Kill();
 	}
 
 	@Override

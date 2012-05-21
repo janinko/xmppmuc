@@ -1,22 +1,22 @@
 package eu.janinko.xmppmuc.commands;
 
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 
-import eu.janinko.xmppmuc.MucCommands;
+import eu.janinko.xmppmuc.CommandWrapper;
 
 public class Emote implements Command{
-	public Emote() {}
-
-	MucCommands mucc;
+	private CommandWrapper cw;
 	
-	public Emote(MucCommands mucc){
-		this.mucc = mucc;
+	
+	public Emote() {}
+	
+	public Emote(CommandWrapper commandWrapper){
+		this.cw = commandWrapper;
 	}
 	
 	@Override
-	public Command build(MucCommands mucCommands) {
-		return new Emote(mucCommands);
+	public Command build(CommandWrapper commandWrapper) {
+		return new Emote(commandWrapper);
 	}
 
 	public String getCommand() {
@@ -24,15 +24,10 @@ public class Emote implements Command{
 	}
 
 	public void handle(Message m, String[] args) {
-		try {
-			if(args.length == 1){
-				mucc.getMuc().sendMessage("/me zije");
-			}else{
-				mucc.getMuc().sendMessage("/me " + mucc.hGetCommand(m).substring(getCommand().length()+1));
-			}
-		} catch (XMPPException e) {
-			System.err.println("Emote.handle() A");
-			e.printStackTrace();
+		if(args.length == 1){
+			cw.sendMessage("/me zije");
+		}else{
+			cw.sendMessage("/me " + cw.hGetCommand(m).substring(getCommand().length()+1));
 		}
 	}
 

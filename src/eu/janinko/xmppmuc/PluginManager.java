@@ -22,14 +22,14 @@ import eu.janinko.xmppmuc.commands.PluginBuildException;
 
 public class PluginManager{
 	private MucCommands mucc;
-	private Map<String, Command> commands;
+	private Map<String, CommandWrapper> commands;
 	private String pluginDirectoryPath = System.getProperty("user.home") + "/.xmppmuc/plugins/jar/";
 
 	private static Logger logger = Logger.getLogger(PluginManager.class);
 	
 	public PluginManager(MucCommands mucCommands) {
 		this.mucc = mucCommands;
-		commands = new HashMap<String, Command>();
+		commands = new HashMap<String, CommandWrapper>();
 	}
 
 	void loadPlugins(){
@@ -37,7 +37,7 @@ public class PluginManager{
 		try{
 			for(Command c : ServiceLoader.load(Command.class)){
 				try {
-					commands.put(c.getCommand(),c.build(mucc));
+					commands.put(c.getCommand(),new CommandWrapper(c, mucc));
 					sb.append(c.getCommand());
 					sb.append(", ");
 				} catch (PluginBuildException e) {
@@ -55,10 +55,12 @@ public class PluginManager{
 	}
 	
 	boolean loadPlugin(String binaryName){
+		logger.info("Loading plugin: " + binaryName);
 		File pluginDirectory = new File(pluginDirectoryPath);
 		
 		ArrayList<URL> urls = new ArrayList<URL>();
 		for(File f : pluginDirectory.listFiles()){
+			logger.trace("Checking file: " + f.getAbsolutePath());
 			try {
 				urls.add(f.toURI().toURL());
 			} catch (MalformedURLException e) {
@@ -69,7 +71,7 @@ public class PluginManager{
 		
 		URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
 
-		Class clazz;
+		Class<?> clazz;
 		try {
 			clazz = classLoader.loadClass(binaryName);
 		} catch (ClassNotFoundException e) {
@@ -80,6 +82,7 @@ public class PluginManager{
 		Object o;
 		try {
 			o = clazz.newInstance();
+			logger.debug("Instance " + o + " created");
 		} catch (InstantiationException e) {
 			logger.error("loadPlugin", e);
 			return false;
@@ -88,26 +91,24 @@ public class PluginManager{
 			return false;
 		}
 		
-		Command in = null;
+		CommandWrapper in = null;
 		try {
-			in = ((Command) o).build(mucc);
+			in = new CommandWrapper((Command) o,mucc);
+			logger.debug("CommandWrapper " + in + " created");
 		} catch (PluginBuildException e) {
 			logger.error("loadPlugin", e);
 			return false;
 		}
-		if(in == null){
-			return false;
-		}
 
-		commands.put(in.getCommand(),in);
-		logger.debug("NACTENO: " + in.getCommand());
+		commands.put(in.command.getCommand(),in);
+		logger.info("NACTENO: " + in.command.getCommand());
 		return true;
 	}
 	
 	boolean removeCommand(String command){
 		if(!commands.containsKey(command))
 			return false;
-		commands.get(command).destroy();
+		commands.get(command).command.destroy();
 		commands.remove(command);
 		return true;
 	}
@@ -134,7 +135,7 @@ public class PluginManager{
 		for(Command c : ServiceLoader.load(Command.class)){
 			if(c.getCommand().equals(command)){
 				try {
-					commands.put(c.getCommand(),c.build(mucc));
+					commands.put(c.getCommand(),new CommandWrapper(c,mucc));
 					return true;
 				} catch (PluginBuildException e) {
 					System.err.println("PluginManager.startPlugin() A");
@@ -146,7 +147,7 @@ public class PluginManager{
 		return false;
 	}
 
-	public Collection<Command> getCommands() {
+	public Collection<CommandWrapper> getCommands() {
 		return commands.values();
 	}
 }

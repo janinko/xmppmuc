@@ -1,22 +1,21 @@
 package eu.janinko.xmppmuc.commands;
 
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 
-import eu.janinko.xmppmuc.MucCommands;
+import eu.janinko.xmppmuc.CommandWrapper;
 
 public class Say implements Command{
-	public Say() {}
-
-	MucCommands mucc;
+	private CommandWrapper cw;
 	
-	public Say(MucCommands mucc){
-		this.mucc = mucc;
+	public Say() {}
+	
+	public Say(CommandWrapper commandWrapper){
+		this.cw = commandWrapper;
 	}
 	
 	@Override
-	public Command build(MucCommands mucCommands) {
-		return new Say(mucCommands);
+	public Command build(CommandWrapper commandWrapper) {
+		return new Say(commandWrapper);
 	}
 
 	public String getCommand() {
@@ -24,15 +23,10 @@ public class Say implements Command{
 	}
 
 	public void handle(Message m, String[] args) {
-		try {
-			if(args.length == 1){
-				mucc.getMuc().sendMessage("pff");
-			}else{
-				mucc.getMuc().sendMessage(mucc.hGetCommand(m).substring(getCommand().length()+1));
-			}
-		} catch (XMPPException e) {
-			System.err.println("Say.handle() A");
-			e.printStackTrace();
+		if(args.length == 1){
+			cw.sendMessage("pff");
+		}else{
+			cw.sendMessage(cw.hGetCommand(m).substring(getCommand().length()+1));
 		}
 	}
 

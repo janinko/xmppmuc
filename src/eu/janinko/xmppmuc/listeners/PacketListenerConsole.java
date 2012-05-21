@@ -1,98 +1,135 @@
 package eu.janinko.xmppmuc.listeners;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.packet.DelayInformation;
 
 import eu.janinko.xmppmuc.MucCommands;
-import eu.janinko.xmppmuc.MucSeer;
 
 public class PacketListenerConsole implements PacketListener{
 	private MucCommands mucc;
-	private MucSeer mucs;
 	private Set<String> onlineUsers;
 	private String commandPrefix;
+	
+	private Logger logger = Logger.getLogger(PacketListenerConsole.class);
 
-	public PacketListenerConsole(MucCommands mucc, MucSeer mucs, MultiUserChat muc) {
+	public PacketListenerConsole(MucCommands mucc) {
 		this.mucc = mucc;
 		this.commandPrefix = mucc.getPrefix();
+	}
+	
+	public void init(){
 		onlineUsers = new HashSet<String>();
-		Iterator<String> is = muc.getOccupants();
+		Iterator<String> is = mucc.getMuc().getOccupants();
 		while(is.hasNext()){
 			String s = is.next();
 			onlineUsers.add(s.split("/")[1]);
 		}
-		this.mucs = mucs;
 	}
 
 	@Override
 	public void processPacket(Packet packet) {
-		System.out.println("Packet + " + (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.S")).format(new Date()));
-		String nick = packet.getFrom().split("/")[1];
-		PacketExtension px = packet.getExtension("jabber:x:delay");
+		if(logger.isTraceEnabled()){logger.trace("Packet + " + packet);}
+		
+		if(packet instanceof Message){
+			processMessage((Message) packet);
+		}else if(packet instanceof IQ){
+			processIQ((IQ) packet);
+		}else if(packet instanceof Presence){
+			processPresence((Presence) packet);
+		}else{
+			logger.warn("Neznamy typ packetu");
+		}
+	}
+	
+
+	private void processPresence(Presence p) {
+		if(logger.isTraceEnabled()){logger.trace("  presence packet");}
+		String nick = p.getFrom().split("/")[1];
+		Calendar c = new GregorianCalendar();
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		sb.append(getPrintableTime(c));
+		sb.append(']');
+		sb.append("***");
+		sb.append(nick);
+		switch(p.getType()){
+		case available:
+			if(!onlineUsers.contains(nick)){
+				onlineUsers.add(nick);
+				sb.append(" prisel");
+				mucc.handlePresence(p);
+			}
+			break;
+		case unavailable:
+			onlineUsers.remove(nick);
+			sb.append(" odesel");
+			mucc.handlePresence(p);
+			break;
+		default:
+			sb.append(' ');
+			sb.append(p.getType());
+			break;
+		}
+		logger.info(sb);
+	}
+
+	private void processIQ(IQ p) {
+		if(logger.isTraceEnabled()){logger.trace("  IQ packet");}
+		StringBuilder sb = new StringBuilder();
+		sb.append("Received packet: ");
+		sb.append(p);
+		sb.append(p.getType());
+		sb.append(p.toXML());
+
+		logger.debug(sb);
+	}
+
+	private void processMessage(Message p) {
+		if(logger.isTraceEnabled()){logger.trace("  Message packet");}
+		String nick = p.getFrom().split("/")[1];
+		PacketExtension px = p.getExtension("jabber:x:delay");
 		Calendar c = new GregorianCalendar();
 		
 		if((px != null) && (px instanceof DelayInformation)){
 			DelayInformation di = (DelayInformation) px;
 			c.setTime(di.getStamp());
 		}
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		sb.append(getPrintableTime(c));
+		sb.append(']');
+		sb.append(' ');
+		sb.append('<');
+		sb.append(nick);
+		sb.append('>');
+		sb.append(' ');
+		sb.append(p.getBody());
+		logger.info(sb);
 		
-		if(packet instanceof Message){
-			Message p = (Message) packet;
-
-			System.out.print("[" + getPrintableTime(c) + "] ");
-			System.out.print("<" + nick + "> ");
-			System.out.println(p.getBody());
-			
-			if(p.getBody().startsWith(commandPrefix) && px == null){
+		if(p.getBody().startsWith(commandPrefix) && px == null){
+			if(logger.isTraceEnabled()){logger.trace("command message");}
+			if(logger.isTraceEnabled()){logger.trace("mucc: " + mucc + "; p: "+ p);}
+			try{
 				mucc.handleCommand(p);
-			}else{
-				mucc.handleMessage(p);
-				mucs.checkMessage(p);
+			}catch(Exception e){
+				logger.error("Cannot handle message", e);
 			}
-		}else if(packet instanceof IQ){
-			IQ p = (IQ) packet;
-			System.out.println("Received packet: " + p);
-			System.out.println(p.getType());
-			System.out.println(p.toXML());
-		}else if(packet instanceof Presence){
-			Presence p = (Presence) packet;
-			
-			if(p.getType() == Presence.Type.available){
-				if(!onlineUsers.contains(nick)){
-					onlineUsers.add(nick);
-					System.out.print("[" + getPrintableTime(c) + "] ");
-					System.out.println("***" + nick + " prisel");
-					mucc.handlePresence(p);
-				}
-			}else if(p.getType() == Presence.Type.unavailable){
-				onlineUsers.remove(nick);
-				System.out.print("[" + getPrintableTime(c) + "] ");
-				System.out.println("***" + nick + " odesel");
-				mucc.handlePresence(p);
-			}else{
-				System.out.print("[" + getPrintableTime(c) + "] ");
-				System.out.println("***" + nick + " " + p.getType());
-			}
-
 		}else{
-			System.out.println("Chyba");
+			mucc.handleMessage(p);
 		}
 	}
-	
 
 	private static String getPrintableTime(Calendar c){
 		return (c.get(Calendar.HOUR_OF_DAY) < 10? "0" : "" ) + c.get(Calendar.HOUR_OF_DAY)   + ":" + 
