@@ -6,7 +6,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 
 import eu.janinko.xmppmuc.CommandWrapper;
-import eu.janinko.xmppmuc.MucCommands;
+import eu.janinko.xmppmuc.Helper;
 
 public class Pozdrav extends AbstractCommand implements PresenceCommand{
 	private CommandWrapper cw;
@@ -34,7 +34,7 @@ public class Pozdrav extends AbstractCommand implements PresenceCommand{
 	public void handle(Message m, String[] args) {
 
 			if(args.length == 1){
-				String nick = MucCommands.hGetNick(m);
+				String nick = Helper.getNick(m);
 				if(pozdravy.containsKey(nick)){
 					cw.sendMessage(nick + ": " + pozdravy.get(nick));
 				}
@@ -71,8 +71,8 @@ public class Pozdrav extends AbstractCommand implements PresenceCommand{
 
 	public void handlePresence(Presence p) {
 		if(p.getType() == Presence.Type.available){
-			if(pozdravy.containsKey(MucCommands.hGetNick(p))){
-				cw.sendMessage(MucCommands.hGetNick(p) + ": " + pozdravy.get(MucCommands.hGetNick(p)));
+			if(pozdravy.containsKey(Helper.getNick(p))){
+				cw.sendMessage(Helper.getNick(p) + ": " + pozdravy.get(Helper.getNick(p)));
 			}
 		}
 	}

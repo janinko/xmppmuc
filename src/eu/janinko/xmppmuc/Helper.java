@@ -1,5 +1,7 @@
 package eu.janinko.xmppmuc;
 
+import org.jivesoftware.smack.packet.Packet;
+
 public class Helper {
 	
 	
@@ -25,6 +27,10 @@ public class Helper {
 			sb.append(args[i]);
 		}
 		return sb.toString();
+	}
+
+	public static String getNick(Packet p) {
+		return p.getFrom().split("/")[1];
 	}
 	
 	

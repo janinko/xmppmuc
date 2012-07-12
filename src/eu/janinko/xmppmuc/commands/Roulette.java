@@ -7,7 +7,7 @@ import java.util.Set;
 import org.jivesoftware.smack.packet.Message;
 
 import eu.janinko.xmppmuc.CommandWrapper;
-import eu.janinko.xmppmuc.MucCommands;
+import eu.janinko.xmppmuc.Helper;
 
 public class Roulette extends AbstractCommand{
 	private CommandWrapper cw;
@@ -38,7 +38,7 @@ public class Roulette extends AbstractCommand{
 	}
 
 	public void handle(Message m, String[] args) {
-		String nick = MucCommands.hGetNick(m);
+		String nick = Helper.getNick(m);
 		
 		if(args.length == 2 && args[1].equals("restart")){
 			deadNicks.clear();
