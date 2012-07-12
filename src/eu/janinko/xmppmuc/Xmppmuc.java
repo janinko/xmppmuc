@@ -1,10 +1,5 @@
 package eu.janinko.xmppmuc;
 
-import java.io.IOException;
-import java.net.URL;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
@@ -13,13 +8,13 @@ import org.jivesoftware.smack.filter.FromMatchesFilter;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import eu.janinko.xmppmuc.listeners.ChatManagerListenerMucCommand;
-import eu.janinko.xmppmuc.listeners.ConnectionListenerImpl;
-import eu.janinko.xmppmuc.listeners.InvitationRejectionListenerImpl;
+import eu.janinko.xmppmuc.listeners.ConnectionListenerLogger;
+import eu.janinko.xmppmuc.listeners.InvitationRejectionListenerLogger;
 import eu.janinko.xmppmuc.listeners.PacketListenerConsole;
-import eu.janinko.xmppmuc.listeners.PacketListenerImpl;
-import eu.janinko.xmppmuc.listeners.ParticipantStatusListenerImpl;
-import eu.janinko.xmppmuc.listeners.SubjectUpdatedListenerImpl;
-import eu.janinko.xmppmuc.listeners.UserStatusListenerImpl;
+import eu.janinko.xmppmuc.listeners.PacketListenerLogger;
+import eu.janinko.xmppmuc.listeners.ParticipantStatusListenerLogger;
+import eu.janinko.xmppmuc.listeners.SubjectUpdatedListenerLogger;
+import eu.janinko.xmppmuc.listeners.UserStatusListenerLogger;
 
 public class Xmppmuc {
 	XMPPConnection2 connection;
@@ -54,12 +49,12 @@ public class Xmppmuc {
 			muc = null;
 			return false;
 		}
-	    muc.addUserStatusListener(new UserStatusListenerImpl(this));
-	    muc.addInvitationRejectionListener(new InvitationRejectionListenerImpl(this));
-	    muc.addMessageListener(new PacketListenerImpl(this));
-	    muc.addParticipantListener(new PacketListenerImpl(this));
-	    muc.addParticipantStatusListener(new ParticipantStatusListenerImpl(this));
-	    muc.addSubjectUpdatedListener(new SubjectUpdatedListenerImpl(this));
+	    muc.addUserStatusListener(new UserStatusListenerLogger());
+	    muc.addInvitationRejectionListener(new InvitationRejectionListenerLogger());
+	    muc.addMessageListener(new PacketListenerLogger());
+	    muc.addParticipantListener(new PacketListenerLogger());
+	    muc.addParticipantStatusListener(new ParticipantStatusListenerLogger());
+	    muc.addSubjectUpdatedListener(new SubjectUpdatedListenerLogger());
 	    
 	    
 		connection.addPacketListener(plc, messageFilter);
@@ -92,7 +87,7 @@ public class Xmppmuc {
 			connection = null;
 			return false;
 		}
-		connection.addConnectionListener(new ConnectionListenerImpl(this));
+		connection.addConnectionListener(new ConnectionListenerLogger());
 
 		mucCommands = new MucCommands(prefix);
 		plc = new PacketListenerConsole(mucCommands);
@@ -105,17 +100,17 @@ public class Xmppmuc {
 	    
 		connection.getChatManager().addChatListener(new ChatManagerListenerMucCommand(room,mucCommands));
 
-	    try {
-			RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_novinky.php"),muc,"Novinky");
-			RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_trubaci.php"),muc,"Trubači");
-		    RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_prohresky.php"),muc,"Prohřešky",
-		               RssReader.AUTHOR | RssReader.CONTENT | RssReader.LINK | RssReader.TITLE);
-		} catch (IOException e) {
-			System.err.println("Xmppmuc.connect() F");
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
+	    //try {
+			//RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_novinky.php"),muc,"Novinky");
+			//RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_trubaci.php"),muc,"Trubači");
+		    //RssReader.lunchRssFeed(new URL("http://www.andaria.cz/rss_prohresky.php"),muc,"Prohřešky",
+		    //           RssReader.AUTHOR | RssReader.CONTENT | RssReader.LINK | RssReader.TITLE);
+		//} catch (IOException e) {
+			//System.err.println("Xmppmuc.connect() F");
+			//e.printStackTrace();
+		//} catch (ParserConfigurationException e) {
+		//	e.printStackTrace();
+		//}
 
 		//for(ConnectionListener  cl : connection.getConnectionListeners()){
 		//	System.out.println(cl + " --- " + cl.getClass());

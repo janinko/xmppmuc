@@ -3,12 +3,13 @@ package eu.janinko.xmppmuc;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Message;
 
+import eu.janinko.xmppmuc.commands.AbstractCommand;
 import eu.janinko.xmppmuc.commands.Command;
 import eu.janinko.xmppmuc.commands.PluginBuildException;
 
-public class PluginManagerCommand implements Command {
+public class PluginManagerCommand extends AbstractCommand {
 	CommandWrapper cw;
-	PluginManager pm;
+	Plugins plugins;
 	
 	private static Logger logger = Logger.getLogger(PluginManagerCommand.class);
 	
@@ -16,7 +17,7 @@ public class PluginManagerCommand implements Command {
 	
 	public PluginManagerCommand(CommandWrapper commandWrapper){
 		cw = commandWrapper;
-		pm = cw.getMucCommands().pm;
+		plugins = cw.getCommands().getPlugins();
 	}
 
 	@Override
@@ -34,17 +35,17 @@ public class PluginManagerCommand implements Command {
 		logger.debug("got command: " + args);
 		if(args[1].equals("stop")){
 			logger.info("request stop command: " + args[2]);
-			if(pm.removeCommand(args[2])){
+			if(plugins.removeCommand(args[2])){
 				cw.sendMessage("Plugin " + args[2] + " byl zastaven.");
 			}
 		}else if(args[1].equals("load")){
 			logger.info("request load command: " + args[2]);
-			if(pm.loadPlugin(args[2])){
+			if(plugins.loadPlugin(args[2])){
 				cw.sendMessage("Plugin " + args[2] + " byl načten.");
 			}
 		}else if(args[1].equals("start")){
 			logger.info("request start command: " + args[2]);
-			if(pm.startPlugin(args[2])){
+			if(plugins.startPlugin(args[2])){
 				cw.sendMessage("Plugin " + args[2] + " byl spuštěn.");
 			}
 		}
@@ -52,16 +53,12 @@ public class PluginManagerCommand implements Command {
 
 	@Override
 	public String help(String prefix) {
-		return null;
+		return prefix + getCommand() + "((stop|start) command|load fullname)";
 	}
 
 	@Override
 	public int getPrivLevel() {
 		return 100;
-	}
-
-	@Override
-	public void destroy() {
 	}
 
 }

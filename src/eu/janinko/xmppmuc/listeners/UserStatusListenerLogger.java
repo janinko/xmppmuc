@@ -1,19 +1,14 @@
 package eu.janinko.xmppmuc.listeners;
 
 import org.apache.log4j.Logger;
-
 import org.jivesoftware.smackx.muc.UserStatusListener;
 
-import eu.janinko.xmppmuc.Xmppmuc;
 
-
-public class UserStatusListenerImpl implements UserStatusListener {
+public class UserStatusListenerLogger implements UserStatusListener {
 	
-	private Xmppmuc xmppmuc;
-	private static Logger logger = Logger.getLogger(UserStatusListenerImpl.class);
+	private static Logger logger = Logger.getLogger(UserStatusListenerLogger.class);
 	
-	public UserStatusListenerImpl(Xmppmuc xmppmuc){
-		this.xmppmuc = xmppmuc;
+	public UserStatusListenerLogger(){
 	}
 
 	@Override

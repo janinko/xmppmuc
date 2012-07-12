@@ -4,7 +4,7 @@ import org.jivesoftware.smack.packet.Message;
 
 import eu.janinko.xmppmuc.CommandWrapper;
 
-public class Kill implements Command {
+public class Kill extends AbstractCommand{
 	public Kill() {}
 	
 	@Override
@@ -24,18 +24,12 @@ public class Kill implements Command {
 
 	@Override
 	public void handle(Message m, String[] args) {
-		Runtime.getRuntime() .exit(0);
+		Runtime.getRuntime().exit(0);
 	}
 
 	@Override
 	public String help(String prefix) {
 		return "Vypne bota";
-	}
-
-	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

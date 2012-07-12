@@ -9,7 +9,7 @@ import org.jivesoftware.smack.packet.Message;
 import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.MucCommands;
 
-public class Roulette implements Command{
+public class Roulette extends AbstractCommand{
 	private CommandWrapper cw;
 	
 	private Set<String> deadNicks;
@@ -51,7 +51,7 @@ public class Roulette implements Command{
 		}else if(lastNick.equals(nick)){
 			cw.sendMessage(nick + ": Nemůžeš mačkat kohoutek dvakrat po sobě!");
 		}else{
-			if(random.nextInt(7-chamber) == 0){
+			if(random.nextInt(8-chamber) == 0){
 				cw.sendMessage(nick + ": komora #" + chamber + " z 6 => *BANG*");
 				cw.sendMessage("/me přebil");
 				deadNicks.add(nick);
@@ -74,17 +74,6 @@ public class Roulette implements Command{
 	public String help(String prefix) {
 		return "Příkazem '" + prefix + "roulette' si zahraješ ruskou ruletu.\n" +
 			   "Příkazem '" + prefix + "roulette restart' restartuješ ruletu a vrátíš mrtvé mezi živé.";
-	}
-	
-	public int getPrivLevel(){
-		return 0;
-	}
-
-	@Override
-	public void destroy() {
-		deadNicks.clear();
-		chamber = 1;
-		lastNick = "";		
 	}
 
 }

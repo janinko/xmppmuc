@@ -8,7 +8,7 @@ import org.jivesoftware.smack.packet.Presence;
 import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.MucCommands;
 
-public class Pozdrav implements PresenceCommand{
+public class Pozdrav extends AbstractCommand implements PresenceCommand{
 	private CommandWrapper cw;
 
 	ConfigManager configManager;
@@ -29,10 +29,6 @@ public class Pozdrav implements PresenceCommand{
 
 	public String getCommand() {
 		return "pozdrav";
-	}
-
-	public int getPrivLevel() {
-		return 0;
 	}
 
 	public void handle(Message m, String[] args) {
@@ -62,7 +58,7 @@ public class Pozdrav implements PresenceCommand{
 					cw.sendMessage("Pozdrav pro " + args[2] + " byl zrušen");
 				}
 			}else{
-				cw.sendMessage(this.help(cw.getMucCommands().getPrefix()));
+				cw.sendMessage(this.help(cw.getCommands().getPrefix()));
 			}
 	}
 
@@ -79,9 +75,5 @@ public class Pozdrav implements PresenceCommand{
 				cw.sendMessage(MucCommands.hGetNick(p) + ": " + pozdravy.get(MucCommands.hGetNick(p)));
 			}
 		}
-	}
-
-	@Override
-	public void destroy() {		
 	}
 }

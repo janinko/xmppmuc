@@ -2,16 +2,19 @@ package eu.janinko.xmppmuc.commands;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Message;
 
 import eu.janinko.xmppmuc.CommandWrapper;
 
-public class Privset implements Command {
+public class Privset extends AbstractCommand {
 	private CommandWrapper cw;
 
 	public Privset() {}
 
 	ConfigManager configManager;
+	
+	private static Logger logger = Logger.getLogger(Privset.class);
 
 	public Privset(CommandWrapper commandWrapper){
 		this.cw = commandWrapper;
@@ -21,7 +24,7 @@ public class Privset implements Command {
 		Map<String, String> config = configManager.getConfig("jid");
 		
 		for(String userJid : config.keySet()){
-			cw.getMucCommands().privSet(userJid, Integer.decode(config.get(userJid)));
+			cw.getCommands().privSet(userJid, Integer.decode(config.get(userJid)));
 		}
 	}
 	
@@ -39,7 +42,6 @@ public class Privset implements Command {
 	}
 
 	public void handle(Message m, String[] args) {
-
 		if(args.length != 3) return;
 
 		if(!args[1].matches("[A-Za-z.-]+@[A-Za-z.-]+.[a-z]+")) return;
@@ -47,16 +49,14 @@ public class Privset implements Command {
 		if(!args[2].matches("-?[0-9]+")) return;
 		
 		configManager.setConfig("jid", args[1], args[2]);
-		cw.getMucCommands().privSet(args[1], Integer.decode(args[2]));
-		System.out.println("Práva pro " + args[1] + " byla nastaven na: " + args[2]);
+		cw.getCommands().privSet(args[1], Integer.decode(args[2]));
+		String message = "Práva pro " + args[1] + " byla nastaven na: " + args[2];
+		logger.info(message);
+		cw.sendMessage(message);
 	}
 
 	public String help(String prefix) {
-		return null;
-	}
-
-	@Override
-	public void destroy() {		
+		return prefix + getCommand() + " jid prvlevel";
 	}
 
 }

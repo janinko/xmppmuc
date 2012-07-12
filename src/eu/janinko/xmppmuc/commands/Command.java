@@ -18,4 +18,8 @@ public interface Command {
 	
 	void destroy();
 
+	void connected();
+
+	void disconnected();
+
 }

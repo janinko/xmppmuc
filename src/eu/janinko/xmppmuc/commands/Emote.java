@@ -3,10 +3,10 @@ package eu.janinko.xmppmuc.commands;
 import org.jivesoftware.smack.packet.Message;
 
 import eu.janinko.xmppmuc.CommandWrapper;
+import eu.janinko.xmppmuc.Helper;
 
-public class Emote implements Command{
+public class Emote extends AbstractCommand{
 	private CommandWrapper cw;
-	
 	
 	public Emote() {}
 	
@@ -27,7 +27,7 @@ public class Emote implements Command{
 		if(args.length == 1){
 			cw.sendMessage("/me zije");
 		}else{
-			cw.sendMessage("/me " + cw.hGetCommand(m).substring(getCommand().length()+1));
+			cw.sendMessage("/me " + Helper.implode(args,1));
 		}
 	}
 
@@ -39,7 +39,4 @@ public class Emote implements Command{
 		return 1;
 	}
 
-	@Override
-	public void destroy() {		
-	}
 }

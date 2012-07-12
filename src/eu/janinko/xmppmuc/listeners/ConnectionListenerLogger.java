@@ -3,15 +3,11 @@ package eu.janinko.xmppmuc.listeners;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.ConnectionListener;
 
-import eu.janinko.xmppmuc.Xmppmuc;
+public class ConnectionListenerLogger implements ConnectionListener {
+	private static Logger logger = Logger.getLogger(ConnectionListenerLogger.class);
 
-public class ConnectionListenerImpl implements ConnectionListener {
-	Xmppmuc xmppmuc;
-	private static Logger logger = Logger.getLogger(ConnectionListenerImpl.class);
 
-	public ConnectionListenerImpl(Xmppmuc xmppmuc) {
-		this.xmppmuc = xmppmuc;
-	}
+	public ConnectionListenerLogger( ) {}
 
 	@Override
 	public void connectionClosed() {
@@ -36,7 +32,7 @@ public class ConnectionListenerImpl implements ConnectionListener {
 	@Override
 	public void reconnectionSuccessful() {
 		logger.trace("reconnectionSuccessful");
-		int retry=3;
+		/*int retry=3;
 		while(retry-- > 0 && !xmppmuc.connectToMUC()){
 			logger.error("failet to re-join MUC");
 			try {
@@ -44,7 +40,7 @@ public class ConnectionListenerImpl implements ConnectionListener {
 			} catch (InterruptedException e) {
 				logger.error("Unexcepted interuption", e);
 			}
-		}
+		}*/
 	}
 
 }

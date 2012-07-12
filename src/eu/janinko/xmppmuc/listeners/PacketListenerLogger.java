@@ -5,15 +5,11 @@ import org.apache.log4j.Logger;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.Packet;
 
-import eu.janinko.xmppmuc.Xmppmuc;
-
-public class PacketListenerImpl implements PacketListener {
+public class PacketListenerLogger implements PacketListener {
 	
-	private Xmppmuc xmppmuc;
-	private static Logger logger = Logger.getLogger(PacketListenerImpl.class);
+	private static Logger logger = Logger.getLogger(PacketListenerLogger.class);
 
-	public PacketListenerImpl(Xmppmuc xmppmuc){
-		this.xmppmuc = xmppmuc;
+	public PacketListenerLogger(){
 	}
 	@Override
 	public void processPacket(Packet packet) {

@@ -1,19 +1,14 @@
 package eu.janinko.xmppmuc.listeners;
 
 import org.apache.log4j.Logger;
-
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 
-import eu.janinko.xmppmuc.Xmppmuc;
-
-public class InvitationRejectionListenerImpl implements
+public class InvitationRejectionListenerLogger implements
 		InvitationRejectionListener {
 	
-	private Xmppmuc xmppmuc;
-	private static Logger logger = Logger.getLogger(InvitationRejectionListenerImpl.class);
+	private static Logger logger = Logger.getLogger(InvitationRejectionListenerLogger.class);
 
-	public InvitationRejectionListenerImpl(Xmppmuc xmppmuc){
-		this.xmppmuc = xmppmuc;
+	public InvitationRejectionListenerLogger(){
 	}
 
 	@Override

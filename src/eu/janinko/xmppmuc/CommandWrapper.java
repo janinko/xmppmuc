@@ -2,9 +2,7 @@ package eu.janinko.xmppmuc;
 
 import java.io.File;
 
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
 
 import eu.janinko.xmppmuc.commands.Command;
 import eu.janinko.xmppmuc.commands.PluginBuildException;
@@ -15,40 +13,41 @@ import eu.janinko.xmppmuc.commands.PluginBuildException;
  *
  */
 public class CommandWrapper {
-	private MucCommands mucc;
+	private Commands commands;
 	Command command;
 	
-	public CommandWrapper(Command c, MucCommands m) throws PluginBuildException{
-		mucc = m;
+	public CommandWrapper(Command c, Commands commands)  throws PluginBuildException{
+		this.commands = commands;
 		command = c;
 		command = c.build(this);
 	}
-	
-	public MucCommands getMucCommands(){
-		return mucc;
+
+	public Commands getCommands(){
+		return commands;
 	}
 
-	public boolean sendMessage(String message) {
-		try {
-			mucc.getMuc().sendMessage(message);
-		} catch (XMPPException e) {
-			return false;
-		}
-		
-		return true;
+	public void sendMessage(String message) {
+		commands.getConnection().sendMessage(message);
 	}
+	
+	public void sendMessage(Message message) {
+		commands.getConnection().sendsMessage(message);
+	}
+	
 	public File getConfigFile(){
-		return new File(mucc.pluginDir
+		return new File(commands.getPlugins().pluginDir
 				       + command.getClass().getSimpleName()
 				       + ".conf");
 	}
+
+
 	
-	public String hGetCommand(Message m){
-		return m.getBody().substring(mucc.prefix.length());
-	}
+	//public String hGetCommand(Message m){
+	//	return m.getBody().substring(mucc.prefix.length());
+	//}
 	
-	public static String hGetNick(Packet p){
-		return p.getFrom().split("/")[1];
-	}
+	//public static String hGetNick(Packet p){
+	//	return p.getFrom().split("/")[1];
+	//}
 
 }

@@ -60,11 +60,11 @@ public class PluginManager{
 		
 		ArrayList<URL> urls = new ArrayList<URL>();
 		for(File f : pluginDirectory.listFiles()){
-			logger.trace("Checking file: " + f.getAbsolutePath());
+			if(logger.isTraceEnabled()){logger.trace("Checking file: " + f.getAbsolutePath());}
 			try {
 				urls.add(f.toURI().toURL());
 			} catch (MalformedURLException e) {
-				logger.error("loadPlugin", e);
+				logger.error("Failed to load plugin", e);
 				return false;
 			}
 		}
