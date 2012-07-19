@@ -45,6 +45,7 @@ public class Commands {
 			plugins.disconnected();
 		}else{
 			muc.addMessageListener(new PluginsPacketListener(this));
+			muc.addParticipantListener(new PluginsPacketListener(this));
 			plugins.connected();
 		}
 	}
