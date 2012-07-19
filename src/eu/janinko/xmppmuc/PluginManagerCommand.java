@@ -1,7 +1,7 @@
 package eu.janinko.xmppmuc;
 
 import org.apache.log4j.Logger;
-import org.jivesoftware.smack.packet.Message;
+import eu.janinko.xmppmuc.Message;
 
 import eu.janinko.xmppmuc.commands.AbstractCommand;
 import eu.janinko.xmppmuc.commands.Command;

@@ -1,8 +1,8 @@
 package eu.janinko.xmppmuc.commands;
 
-import org.jivesoftware.smack.packet.Message;
 
 import eu.janinko.xmppmuc.CommandWrapper;
+import eu.janinko.xmppmuc.Message;
 
 public interface Command {
 

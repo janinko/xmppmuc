@@ -67,7 +67,7 @@ public class Commands {
 		}
 		for(CommandWrapper cw : plugins.getMessagePlugins()){
 			MessageCommand command = (MessageCommand) cw.command;
-			command.handleMessage(message);
+			command.handleMessage(new eu.janinko.xmppmuc.Message(message));
 		}
 	}
 	
@@ -89,7 +89,7 @@ public class Commands {
 			if(cw == null) return;
 			Command c = cw.command;
 			if(c.getPrivLevel() <= priv){
-				c.handle(message, command);
+				c.handle(new eu.janinko.xmppmuc.Message(message), command);
 			}
 		}
 	}

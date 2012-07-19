@@ -4,10 +4,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import org.jivesoftware.smack.packet.Message;
-
 import eu.janinko.xmppmuc.CommandWrapper;
-import eu.janinko.xmppmuc.Helper;
+import eu.janinko.xmppmuc.Message;
 
 public class Roulette extends AbstractCommand{
 	private CommandWrapper cw;
@@ -38,7 +36,7 @@ public class Roulette extends AbstractCommand{
 	}
 
 	public void handle(Message m, String[] args) {
-		String nick = Helper.getNick(m);
+		String nick = m.getNick();
 		
 		if(args.length == 2 && args[1].equals("restart")){
 			deadNicks.clear();

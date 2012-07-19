@@ -3,7 +3,7 @@ package eu.janinko.xmppmuc.commands;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.jivesoftware.smack.packet.Message;
+import eu.janinko.xmppmuc.Message;
 
 import eu.janinko.xmppmuc.CommandWrapper;
 

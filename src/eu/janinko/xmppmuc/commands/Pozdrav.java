@@ -2,7 +2,7 @@ package eu.janinko.xmppmuc.commands;
 
 import java.util.Map;
 
-import org.jivesoftware.smack.packet.Message;
+import eu.janinko.xmppmuc.Message;
 import org.jivesoftware.smack.packet.Presence;
 
 import eu.janinko.xmppmuc.CommandWrapper;
@@ -34,7 +34,7 @@ public class Pozdrav extends AbstractCommand implements PresenceCommand{
 	public void handle(Message m, String[] args) {
 
 			if(args.length == 1){
-				String nick = Helper.getNick(m);
+				String nick = m.getNick();
 				if(pozdravy.containsKey(nick)){
 					cw.sendMessage(nick + ": " + pozdravy.get(nick));
 				}
