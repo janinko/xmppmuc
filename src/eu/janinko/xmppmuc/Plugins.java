@@ -142,18 +142,25 @@ public class Plugins {
 	
 	public void loadPluginsFromConfigFile(){
 		String path = pluginDir + "plugins";
+		BufferedReader in=null;
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(path));
+			in = new BufferedReader(new FileReader(path));
 			String line;
 			while((line = in.readLine()) != null ){
 				loadPlugin(line);
 			}
 		} catch (FileNotFoundException e) {
-			System.err.println("PluginManager.loadPluginsFromConfigFile() A");
-			e.printStackTrace();
+			logger.error("Failed loading file", e);
 		} catch (IOException e) {
-			System.err.println("PluginManager.loadPluginsFromConfigFile() B");
-			e.printStackTrace();
+			logger.error("Failed loading file", e);
+		}finally{
+			if(in != null){
+				try {
+					in.close();
+				} catch (IOException e) {
+					logger.error("Failed closing file", e);
+				}
+			}
 		}
 	}
 	
