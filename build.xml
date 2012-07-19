@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="xmppmuc" default="jar" basedir=".">
+    <description>
+        Bot for XMPP MUC
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src.dir"       value="src"/>
+  <property name="lib.dir"       value="lib"/>
+  <property name="build.dir"     value="build"/>
+  <property name="classes.dir"   value="${build.dir}/classes"/>
+  <property name="jar.dir"       value="${build.dir}/jar"/>
+
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+  </path>
+
+  <target name="clean" description="clean up" >
+    <delete dir="${classes.dir}"/>
+    <delete dir="${jar.dir}"/>
+  </target>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${classes.dir}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" debug="true"/>
+  </target>
+
+  <target name="jar" depends="compile" description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${jar.dir}"/>
+
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${jar.dir}/xmppmuc-${DSTAMP}.jar" basedir="${build}"/>
+  </target>
+
+</project>
