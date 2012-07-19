@@ -38,7 +38,7 @@
     <mkdir dir="${jar.dir}"/>
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${jar.dir}/xmppmuc-${DSTAMP}.jar" basedir="${build}"/>
+    <jar jarfile="${jar.dir}/xmppmuc-${DSTAMP}.jar" basedir="${classes.dir}"/>
   </target>
 
 </project>
