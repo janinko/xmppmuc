@@ -80,7 +80,7 @@ public class RssReader  implements Runnable {
 	}
 	
 	private void read(){
-		SyndFeed feed;
+/*		SyndFeed feed;
 		try {
 			feed = sfInput.build(docbuilder.parse(url.openConnection().getInputStream()));
 			for(Object a : feed.getEntries() ){
@@ -104,7 +104,7 @@ public class RssReader  implements Runnable {
 			}else{
 				logger.error("Exception IOException in RssReader.read()", e1);
 			}
-		}
+		}*/
 	}
 	
 	private void printNew(){
