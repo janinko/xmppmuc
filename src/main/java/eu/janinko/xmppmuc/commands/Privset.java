@@ -23,8 +23,8 @@ public class Privset extends AbstractCommand {
 		
 		Map<String, String> config = configManager.getConfig("jid");
 		
-		for(String userJid : config.keySet()){
-			cw.getCommands().privSet(userJid, Integer.decode(config.get(userJid)));
+		for(Map.Entry<String, String> e : config.entrySet()){
+			cw.getCommands().privSet(e.getKey(), Integer.decode(e.getValue()));
 		}
 	}
 	

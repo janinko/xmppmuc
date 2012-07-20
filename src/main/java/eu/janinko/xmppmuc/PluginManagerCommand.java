@@ -3,6 +3,8 @@ package eu.janinko.xmppmuc;
 import org.apache.log4j.Logger;
 import eu.janinko.xmppmuc.Message;
 
+import java.util.Arrays;
+
 import eu.janinko.xmppmuc.commands.AbstractCommand;
 import eu.janinko.xmppmuc.commands.Command;
 import eu.janinko.xmppmuc.commands.PluginBuildException;
@@ -32,7 +34,7 @@ public class PluginManagerCommand extends AbstractCommand {
 
 	@Override
 	public void handle(Message m, String[] args) {
-		logger.debug("got command: " + args);
+		logger.debug("got command: " + Arrays.toString(args));
 		if(args[1].equals("stop")){
 			logger.info("request stop command: " + args[2]);
 			if(plugins.removeCommand(args[2])){

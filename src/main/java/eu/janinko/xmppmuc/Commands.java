@@ -2,6 +2,7 @@ package eu.janinko.xmppmuc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Message;
@@ -76,7 +77,7 @@ public class Commands {
 		if(muc == null) return;
 		
 		String[] command = message.getBody().substring(prefix.length()).split(" +");
-		if(logger.isTraceEnabled()){logger.trace("Handling command: " + command);}
+		if(logger.isTraceEnabled()){logger.trace("Handling command: " + Arrays.toString(command));}
 		
 		String from = message.getFrom();
 		int priv = getPrivLevel(from);
