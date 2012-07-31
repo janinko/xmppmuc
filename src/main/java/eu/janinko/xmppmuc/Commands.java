@@ -1,8 +1,8 @@
 package eu.janinko.xmppmuc;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Message;
@@ -12,7 +12,6 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import eu.janinko.xmppmuc.commands.Command;
 import eu.janinko.xmppmuc.commands.MessageCommand;
 import eu.janinko.xmppmuc.commands.PresenceCommand;
-import eu.janinko.xmppmuc.listeners.PluginsPacketListener;
 
 public class Commands {
 	private XmppConnection connection;
@@ -40,13 +39,11 @@ public class Commands {
 	}
 
 	public void setMuc(MultiUserChat muc) {
-		if(logger.isTraceEnabled()){logger.trace("Setting muc: '"+muc);}
+		if(logger.isTraceEnabled()){logger.trace("Setting muc: '"+muc+"'");}
 		this.muc = muc;
 		if(muc == null){
 			plugins.disconnected();
 		}else{
-			muc.addMessageListener(new PluginsPacketListener(this));
-			muc.addParticipantListener(new PluginsPacketListener(this));
 			plugins.connected();
 		}
 	}
@@ -55,6 +52,7 @@ public class Commands {
 		if(muc == null) return;
 
 		for(CommandWrapper cw : plugins.getPresencePlugins()){
+			if(logger.isTraceEnabled()){logger.trace("Handling presence with: " +cw.command.getCommand());}
 			PresenceCommand command = (PresenceCommand) cw.command;
 			command.handlePresence(presence);
 		}

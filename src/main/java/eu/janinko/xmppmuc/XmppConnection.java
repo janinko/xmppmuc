@@ -5,6 +5,7 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.FromMatchesFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
@@ -12,6 +13,7 @@ import eu.janinko.xmppmuc.listeners.ConnectionListenerLogger;
 import eu.janinko.xmppmuc.listeners.InvitationRejectionListenerLogger;
 import eu.janinko.xmppmuc.listeners.PacketListenerLogger;
 import eu.janinko.xmppmuc.listeners.ParticipantStatusListenerLogger;
+import eu.janinko.xmppmuc.listeners.PluginsPacketListener;
 import eu.janinko.xmppmuc.listeners.SubjectUpdatedListenerLogger;
 import eu.janinko.xmppmuc.listeners.UserStatusListenerLogger;
 import eu.janinko.xmppmuc.listeners.XmppConnectionListener;
@@ -28,6 +30,7 @@ public class XmppConnection {
 	private MultiUserChat muc;
 	
 	private boolean connected = false;
+	private FromMatchesFilter messageFilter;
 
 	private static Logger logger = Logger.getLogger(XmppConnection.class);
 	
@@ -84,6 +87,7 @@ public class XmppConnection {
 	    connected = true;
 		logger.info("Connected");
 		commands.setMuc(muc);
+		connection.addPacketListener(new PluginsPacketListener(commands), messageFilter);
 	    return true;
 	}
 	
@@ -163,6 +167,7 @@ public class XmppConnection {
 
 	public XmppConnection setRoom(String room) {
 		this.room = room;
+		messageFilter = new FromMatchesFilter(room);
 		return this;
 	}
 
