@@ -1,18 +1,25 @@
 package eu.janinko.xmppmuc.commands;
 
+import java.util.HashSet;
 import java.util.Map;
 
-import eu.janinko.xmppmuc.Message;
+import org.apache.log4j.Logger;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.muc.Affiliate;
 
 import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.Helper;
+import eu.janinko.xmppmuc.Message;
 
 public class Pozdrav extends AbstractCommand implements PresenceCommand{
 	private CommandWrapper cw;
 
 	ConfigManager configManager;
 	private Map<String, String> pozdravy;
+	private HashSet<String> online;
+	
+	private static Logger logger = Logger.getLogger(Pozdrav.class);
 	
 	public Pozdrav() {}
 
@@ -70,10 +77,29 @@ public class Pozdrav extends AbstractCommand implements PresenceCommand{
 	}
 
 	public void handlePresence(Presence p) {
-		if(p.getType() == Presence.Type.available){
-			if(pozdravy.containsKey(Helper.getNick(p))){
-				cw.sendMessage(Helper.getNick(p) + ": " + pozdravy.get(Helper.getNick(p)));
+		String nick = Helper.getNick(p);
+		if(p.getType() == Presence.Type.available && !online.contains(nick)){
+			online.add(nick);
+			if(pozdravy.containsKey(nick)){
+				cw.sendMessage(nick + ": " + pozdravy.get(nick));
 			}
+		}else if(p.getType() == Presence.Type.unavailable){
+			online.remove(nick);
 		}
 	}
+	
+	public void connect(){
+		try {
+			for(Affiliate member : cw.getCommands().getConnection().getMuc().getMembers()){
+				online.add(member.getNick());
+			}
+		} catch (XMPPException e) {
+			logger.error("Failed to obrain members", e);
+		}
+	}
+	
+	public void disconnect(){
+		online.clear();
+	}
+	
 }
