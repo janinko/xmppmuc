@@ -15,6 +15,7 @@ import eu.janinko.xmppmuc.commands.PluginBuildException;
 public class CommandWrapper {
 	private Commands commands;
 	Command command;
+	PluginData data;
 	
 	public CommandWrapper(Command c, Commands commands)  throws PluginBuildException{
 		this.commands = commands;
@@ -34,10 +35,19 @@ public class CommandWrapper {
 		commands.getConnection().sendsMessage(message);
 	}
 	
+	@Deprecated
 	public File getConfigFile(){
 		return new File(commands.getPlugins().pluginDir
 				       + command.getClass().getSimpleName()
 				       + ".conf");
+	}
+	
+	@SuppressWarnings("unchecked")
+	public PluginData getConfig(){
+		if(data == null){
+			data = new PropertiesPluginData((Class<Command>) command.getClass());
+		}
+		return data;
 	}
 
 
