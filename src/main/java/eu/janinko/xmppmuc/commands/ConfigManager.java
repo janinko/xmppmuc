@@ -24,6 +24,8 @@ import org.xml.sax.SAXException;
 public class ConfigManager {
 	Document doc;
 	String path;
+
+	private static Logger logger = Logger.getLogger(ConfigManager.class);
 	
 	public ConfigManager(String path) {
 		this.path = path;
@@ -35,16 +37,13 @@ public class ConfigManager {
 			                    .parse(fXmlFile);
 			doc.getDocumentElement().normalize();
 		} catch (SAXException e) {
-			System.err.println("ConfigManager.ConfigManager() A");
-			e.printStackTrace();
+			logger.error("Failed to create ConfigManager '" + path + "'", e);
 			doc = null;
 		} catch (IOException e) {
-			System.err.println("ConfigManager.ConfigManager() B");
-			e.printStackTrace();
+			logger.error("Failed to create ConfigManager '" + path + "'", e);
 			doc = null;
 		} catch (ParserConfigurationException e) {
-			System.err.println("ConfigManager.ConfigManager() C");
-			e.printStackTrace();
+			logger.error("Failed to create ConfigManager '" + path + "'", e);
 			doc = null;
 		}
 	}
@@ -103,14 +102,11 @@ public class ConfigManager {
 	     StreamResult result =  new StreamResult(new File(path));
 	     transformer.transform(source, result);
 		} catch (TransformerConfigurationException e) {
-			System.err.println("ConfigManager.setConfig() A");
-			e.printStackTrace();
+			logger.error("Failed to transform configuration",e);
 		} catch (TransformerFactoryConfigurationError e) {
-			System.err.println("ConfigManager.setConfig() B");
-			e.printStackTrace();
+			logger.error("Failed to transform configuration",e);
 		} catch (TransformerException e) {
-			System.err.println("ConfigManager.setConfig() C");
-			e.printStackTrace();
+			logger.error("Failed to transform configuration",e);
 		}
 	}
 	
@@ -138,14 +134,11 @@ public class ConfigManager {
 	     StreamResult result =  new StreamResult(new File(path));
 	     transformer.transform(source, result);
 		} catch (TransformerConfigurationException e) {
-			System.err.println("ConfigManager.removeConfig() A");
-			e.printStackTrace();
+			logger.error("Failed to transform configuration", e);
 		} catch (TransformerFactoryConfigurationError e) {
-			System.err.println("ConfigManager.removeConfig() B");
-			e.printStackTrace();
+			logger.error("Failed to transform configuration", e);
 		} catch (TransformerException e) {
-			System.err.println("ConfigManager.removeConfig() C");
-			e.printStackTrace();
+			logger.error("Failed to transform configuration", e);
 		}
 	}
 }
