@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
@@ -14,13 +13,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.apache.log4j.Logger;
 
 public class ConfigManager {
 	Document doc;
@@ -55,6 +53,11 @@ public class ConfigManager {
 	
 	public Map<String, String> getConfig(String attribute){
 		HashMap<String, String> ret = new HashMap<String, String>();
+                
+                if(doc == null){
+                    logger.error("Asking for confing but doc is null!");
+                    return ret;
+                }
 		
 		Node documentNode = doc.getFirstChild();
 		NodeList documentNodes = documentNode.getChildNodes();

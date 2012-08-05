@@ -1,14 +1,5 @@
 package eu.janinko.xmppmuc;
 
-import org.apache.log4j.Logger;
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.filter.FromMatchesFilter;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smackx.muc.MultiUserChat;
-
 import eu.janinko.xmppmuc.listeners.ConnectionListenerLogger;
 import eu.janinko.xmppmuc.listeners.InvitationRejectionListenerLogger;
 import eu.janinko.xmppmuc.listeners.PacketListenerLogger;
@@ -17,6 +8,14 @@ import eu.janinko.xmppmuc.listeners.PluginsPacketListener;
 import eu.janinko.xmppmuc.listeners.SubjectUpdatedListenerLogger;
 import eu.janinko.xmppmuc.listeners.UserStatusListenerLogger;
 import eu.janinko.xmppmuc.listeners.XmppConnectionListener;
+import org.apache.log4j.Logger;
+import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.FromMatchesFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 
 public class XmppConnection {
 	private String server;
@@ -46,6 +45,8 @@ public class XmppConnection {
 		if(server == null || jid == null || password == null || room == null || nick == null)
 			throw new NullPointerException();
 		
+                if(logger.isDebugEnabled()){logger.debug("Connecting " + jid + " (" + server + ")" + " as " + nick + " to " + room + " with password '" + password + "'");}
+                
 		ConnectionConfiguration conf = new ConnectionConfiguration(server);
 		conf.setCompressionEnabled(true);
 		//conf.setDebuggerEnabled(true);

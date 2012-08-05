@@ -24,7 +24,7 @@ public class Bot {
 			try {
 				Thread.sleep(1000*(100-retry*10));
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+                                logger.error("Recconection interrupted.", e);
 			}
 		}
 		

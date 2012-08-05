@@ -1,5 +1,9 @@
 package eu.janinko.xmppmuc;
 
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.SyndFeedInput;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
@@ -9,20 +13,13 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TreeSet;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.xml.sax.SAXException;
-
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.SyndFeedInput;
 
 public class RssReader  implements Runnable {
 	private Date lastUpdate; 
@@ -144,21 +141,22 @@ public class RssReader  implements Runnable {
 		}
 	}
 	
-	public void run(){
-		try {
-			while(true){
-				try{
-					read();
-					printNew();
-				} catch (Exception e) {
-					logger.error(null, e);
-				}
-				Thread.sleep(1000*60*5);
-			}
-		} catch (InterruptedException e) {
-			logger.debug(null, e);
-		}
-	}
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    try {
+                        read();
+                        printNew();
+                    } catch (Exception e) {
+                        logger.error(null, e);
+                    }
+                    Thread.sleep(1000 * 60 * 5);
+                }
+            } catch (InterruptedException e) {
+                logger.debug(null, e);
+            }
+        }
 	
 
 	public static void lunchRssFeed(URL url, MultiUserChat muc, String title, int flags) throws ParserConfigurationException {

@@ -3,8 +3,6 @@ package eu.janinko.xmppmuc;
 import org.jivesoftware.smack.packet.Packet;
 
 public class Helper {
-	
-	
 
 	public static String implode(String[] args){
 		return implode(args," ",0);

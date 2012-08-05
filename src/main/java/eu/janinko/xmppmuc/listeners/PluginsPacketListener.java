@@ -1,13 +1,12 @@
 package eu.janinko.xmppmuc.listeners;
 
+import eu.janinko.xmppmuc.Commands;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
-
-import eu.janinko.xmppmuc.Commands;
 
 public class PluginsPacketListener implements PacketListener {
 	private Commands commands;
@@ -20,7 +19,7 @@ public class PluginsPacketListener implements PacketListener {
 
 	@Override
 	public void processPacket(Packet packet) {
-		if(logger.isTraceEnabled()){logger.trace("Packet + " + packet);}
+		//if(logger.isTraceEnabled()){logger.trace("Packet + " + packet);}
 		
 		if(packet instanceof Message){
 			processMessage((Message) packet);
@@ -34,17 +33,17 @@ public class PluginsPacketListener implements PacketListener {
 	}
 	
 	private void processPresence(Presence p) {
-		if(logger.isTraceEnabled()){logger.trace("  presence packet");}
+		if(logger.isTraceEnabled()){logger.trace("Presence packet " + p);}
 		commands.handlePresence(p);
 	}
 	
 	private void processIQ(IQ p) {
-		if(logger.isTraceEnabled()){logger.trace("  IQ packet");}
+		if(logger.isTraceEnabled()){logger.trace("IQ packet " + p);}
 	}
 	
 
 	private void processMessage(Message p) {
-		if(logger.isTraceEnabled()){logger.trace("  Message packet");}
+		if(logger.isTraceEnabled()){logger.trace("Message packet " + p);}
 		commands.handleMessage(p);
 	}
 

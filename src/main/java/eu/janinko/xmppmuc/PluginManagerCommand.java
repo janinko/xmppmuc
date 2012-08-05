@@ -1,13 +1,10 @@
 package eu.janinko.xmppmuc;
 
-import org.apache.log4j.Logger;
-import eu.janinko.xmppmuc.Message;
-
-import java.util.Arrays;
-
 import eu.janinko.xmppmuc.commands.AbstractCommand;
 import eu.janinko.xmppmuc.commands.Command;
 import eu.janinko.xmppmuc.commands.PluginBuildException;
+import java.util.Arrays;
+import org.apache.log4j.Logger;
 
 public class PluginManagerCommand extends AbstractCommand {
 	CommandWrapper cw;

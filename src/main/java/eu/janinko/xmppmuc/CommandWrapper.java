@@ -1,11 +1,11 @@
 package eu.janinko.xmppmuc;
 
-import java.io.File;
-
-import org.jivesoftware.smack.packet.Message;
-
 import eu.janinko.xmppmuc.commands.Command;
 import eu.janinko.xmppmuc.commands.PluginBuildException;
+import eu.janinko.xmppmuc.data.PluginData;
+import eu.janinko.xmppmuc.data.PropertiesPluginData;
+import java.io.File;
+import org.jivesoftware.smack.packet.Message;
 
 /** Middle layer between Command and MucCommands,
  * providing helpful functionality for Command.

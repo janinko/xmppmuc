@@ -1,5 +1,9 @@
 package eu.janinko.xmppmuc;
 
+import eu.janinko.xmppmuc.commands.Command;
+import eu.janinko.xmppmuc.commands.MessageCommand;
+import eu.janinko.xmppmuc.commands.PluginBuildException;
+import eu.janinko.xmppmuc.commands.PresenceCommand;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,13 +19,7 @@ import java.util.HashSet;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
-
-import eu.janinko.xmppmuc.commands.Command;
-import eu.janinko.xmppmuc.commands.MessageCommand;
-import eu.janinko.xmppmuc.commands.PluginBuildException;
-import eu.janinko.xmppmuc.commands.PresenceCommand;
 
 public class Plugins {
 	String pluginDir = System.getProperty("user.home") + "/.xmppmuc/plugins/";
@@ -44,7 +42,7 @@ public class Plugins {
 	}
 	
 	
-	public void loadPlugins(){
+	public final void loadPlugins(){
 		StringBuilder sb = new StringBuilder("Loaded plugins: ");
 
 		try{
@@ -140,7 +138,7 @@ public class Plugins {
 		return true;
 	}
 	
-	public void loadPluginsFromConfigFile(){
+	public final void loadPluginsFromConfigFile(){
 		String path = pluginDir + "plugins";
 		BufferedReader in=null;
 		try {

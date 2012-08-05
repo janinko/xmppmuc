@@ -1,11 +1,10 @@
 package eu.janinko.xmppmuc.commands;
 
+import eu.janinko.xmppmuc.CommandWrapper;
+import eu.janinko.xmppmuc.Message;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-
-import eu.janinko.xmppmuc.CommandWrapper;
-import eu.janinko.xmppmuc.Message;
 
 public class Roulette extends AbstractCommand{
 	private CommandWrapper cw;
@@ -31,10 +30,12 @@ public class Roulette extends AbstractCommand{
 	}
 	
 
+    @Override
 	public String getCommand() {
 		return "roulette";
 	}
 
+    @Override
 	public void handle(Message m, String[] args) {
 		String nick = m.getNick();
 		
@@ -69,6 +70,7 @@ public class Roulette extends AbstractCommand{
 
 	}
 
+    @Override
 	public String help(String prefix) {
 		return "Příkazem '" + prefix + "roulette' si zahraješ ruskou ruletu.\n" +
 			   "Příkazem '" + prefix + "roulette restart' restartuješ ruletu a vrátíš mrtvé mezi živé.";
