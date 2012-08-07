@@ -4,11 +4,17 @@ import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.Message;
 
 public class Kill extends AbstractCommand{
+        CommandWrapper cw;
+    
 	public Kill() {}
+
+        private Kill(CommandWrapper commandWrapper) {
+            cw = commandWrapper;
+        }
 	
 	@Override
-	public Command build(CommandWrapper mucCommands) {
-		return new Kill();
+	public Command build(CommandWrapper commandWrapper) {
+		return new Kill(commandWrapper);
 	}
 
 	@Override
@@ -23,7 +29,11 @@ public class Kill extends AbstractCommand{
 
 	@Override
 	public void handle(Message m, String[] args) {
+            cw.getCommands().getBot().stop();
+                    
+            if("9".equals(args[1])){
 		Runtime.getRuntime().exit(0);
+            }
 	}
 
 	@Override

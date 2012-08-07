@@ -1,5 +1,6 @@
 package eu.janinko.xmppmuc;
 
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 public class Bot {
@@ -9,7 +10,7 @@ public class Bot {
 	private static Logger logger = Logger.getLogger(Bot.class);
 	
 	public Bot(){
-		commands = new Commands();
+		commands = new Commands(this);
 		connection = new XmppConnection(commands);
 	}
 	
@@ -27,9 +28,26 @@ public class Bot {
                                 logger.error("Recconection interrupted.", e);
 			}
 		}
-		
-		
 	}
+        
+        public void stop(){
+            connection.stop();
+            connection = new XmppConnection(connection);
+            synchronized(this){
+                this.notify();
+            }
+        }
+        
+        public void sleep(){
+            synchronized(this){
+                try {
+                    this.wait();
+                } catch (InterruptedException ex) {
+                    logger.warn("Waiting for connection to finish interupted.");
+                }
+            }
+        }
+        
 	
 	public void setPrefix(String prefix){
 		commands.setPrefix(prefix);

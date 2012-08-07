@@ -25,11 +25,13 @@ public class XmppConnection {
 	private String nick;
 	
 	private Commands commands;
-	private XMPPConnection connection;
+	private FromMatchesFilter messageFilter;
+        
+	XMPPConnection connection;
 	private MultiUserChat muc;
 	
 	private boolean connected = false;
-	private FromMatchesFilter messageFilter;
+	private boolean alive = true;
 
 	private static Logger logger = Logger.getLogger(XmppConnection.class);
 	
@@ -37,9 +39,21 @@ public class XmppConnection {
 		this.commands = commands;
 		commands.setConnection(this);
 	}
+
+        XmppConnection(XmppConnection connection) {
+            this.server = connection.server;
+	    this.jid = connection.jid;
+	    this.password = connection.password;
+	    this.room = connection.room;
+	    this.nick = connection.nick;
+            
+	    this.commands = connection.commands;
+	    this.messageFilter = connection.messageFilter;            
+        }
 	
 	public boolean connect(){
-		connected = false;
+            if(!alive) return false;
+		connected = false ;
 		connection = null;
 		muc = null;
 		if(server == null || jid == null || password == null || room == null || nick == null)
@@ -100,9 +114,10 @@ public class XmppConnection {
 	}
 	
 	private void reconnect() {
+            if(!alive) return;
 		logger.info("Reconnecting");
 		int retry=1;
-		while(!connect()){
+		while(alive && !connect()){
 			int sec = retry * 2 + 3;
 			if(sec > 5*60) sec = 5*60;
 			logger.warn("Recconect " + retry + " failed, waiting " + sec + " seconds.");
@@ -116,6 +131,18 @@ public class XmppConnection {
 		}
 		
 	}
+        
+        public void stop(){
+            alive = false;
+            if(connected){
+		commands.setMuc(null);
+                muc.leave();
+                muc = null;
+                connection.disconnect();
+                connection = null;
+		connected = false;
+            }
+        }
 
 	public void sendMessage(String message) {
 		if(!connected) return;

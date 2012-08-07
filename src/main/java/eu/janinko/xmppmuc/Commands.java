@@ -16,16 +16,16 @@ public class Commands {
 	private MultiUserChat muc;
 	private Map<String,Integer> privs;
 	private Plugins plugins;
+        private Bot bot;
 	
 	String prefix = ".";
 	
 	private static Logger logger = Logger.getLogger(Commands.class);
 	
-	Commands(){
+	public Commands(Bot bot){
 		privs = new HashMap<String,Integer>();
 		plugins = new Plugins(this);
-		
-		
+		this.bot = bot;
 	}
 
 	public String getPrefix() {
@@ -154,5 +154,8 @@ public class Commands {
 		this.connection = xmppConnection;
 	}
 	
+        public Bot getBot(){
+            return bot;
+        }
 
 }
