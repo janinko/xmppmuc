@@ -29,11 +29,17 @@ public class Kill extends AbstractCommand{
 
 	@Override
 	public void handle(Message m, String[] args) {
-            cw.getCommands().getBot().stop();
-                    
-            if("9".equals(args[1])){
-		Runtime.getRuntime().exit(0);
-            }
+		if(args.length > 1){
+			if("9".equals(args[1])){
+				Runtime.getRuntime().exit(0);
+			}else if("0".equals(args[1])){
+				cw.sendMessage("Vedle!");
+				return;
+			}else{
+				cw.sendMessage("uargh");
+			}
+		}
+        cw.getCommands().getBot().stop();
 	}
 
 	@Override
