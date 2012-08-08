@@ -44,7 +44,9 @@ public class PluginsPacketListener implements PacketListener {
 
 	private void processMessage(Message p) {
 		if(logger.isTraceEnabled()){logger.trace("Message packet " + p);}
-		commands.handleMessage(p);
+		if(p.getExtension("jabber:x:delay") == null){
+			commands.handleMessage(p);
+		}
 	}
 
 }
