@@ -9,10 +9,10 @@ import java.util.Set;
 public abstract class PluginData implements PluginDataTree {
     protected boolean persistent = false;
     protected PluginDataTree data;
-    protected Class<Command> clazz;
-    public final String DATA_PATH = System.getProperty("user.home") + "/.xmppmuc/plugins/data/";
+    protected Class<? extends Command> clazz;
+    public static String DATA_PATH = System.getProperty("user.home") + "/.xmppmuc/plugins/data/";
     
-    public PluginData(Class<Command> clazz) {
+    public PluginData(Class<? extends Command> clazz) {
         this.clazz = clazz;
     }
     

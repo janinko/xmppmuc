@@ -16,7 +16,7 @@ public final class PropertiesPluginData extends PluginData {
     private File file;
     private static Logger logger = Logger.getLogger(PropertiesPluginData.class);
 
-    public PropertiesPluginData(Class<Command> clazz) {
+    public PropertiesPluginData(Class<? extends Command> clazz) {
         super(clazz);
         file = new File(DATA_PATH + clazz.getName() + ".properties");
         props = new Properties();
