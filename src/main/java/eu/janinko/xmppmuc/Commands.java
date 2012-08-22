@@ -89,6 +89,8 @@ public class Commands {
 			Command c = cw.command;
 			if(c.getPrivLevel() <= priv){
 				c.handle(new eu.janinko.xmppmuc.Message(message), command);
+			}else if(logger.isInfoEnabled()){
+				logger.info("User " + from + " (priv " + priv + ") tried to do '" + message.getBody() + "' (priv " + c.getPrivLevel() + ")");
 			}
 		}
 	}
