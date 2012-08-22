@@ -194,12 +194,14 @@ public class Plugins {
 	
 	public void connected(){
 		for(CommandWrapper cw : plugins){
+		if(logger.isTraceEnabled()){logger.trace("Connecting: " + cw.command);}
 			cw.command.connected();
 		}
 	}
 	
 	public void disconnected(){
 		for(CommandWrapper cw : plugins){
+		if(logger.isTraceEnabled()){logger.trace("Disconnecting: " + cw.command);}
 			cw.command.disconnected();
 		}
 	}

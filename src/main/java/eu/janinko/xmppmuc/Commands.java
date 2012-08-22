@@ -37,7 +37,7 @@ public class Commands {
 	}
 
 	public void setMuc(MultiUserChat muc) {
-		if(logger.isTraceEnabled()){logger.trace("Setting muc: '"+muc+"'");}
+		if(logger.isTraceEnabled()){logger.trace("Setting muc: "+muc);}
 		this.muc = muc;
 		if(muc == null){
 			plugins.disconnected();
