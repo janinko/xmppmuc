@@ -1,5 +1,9 @@
 package eu.janinko.xmppmuc.commands;
 
+import eu.janinko.xmppmuc.CommandWrapper;
+import eu.janinko.xmppmuc.Helper;
+import eu.janinko.xmppmuc.Message;
+import eu.janinko.xmppmuc.PluginManagerCommand;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,14 +12,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
-import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
-
-import eu.janinko.xmppmuc.CommandWrapper;
-import eu.janinko.xmppmuc.Helper;
-import eu.janinko.xmppmuc.PluginManagerCommand;
 
 public class Reminder extends AbstractCommand implements PresenceCommand {
 	private CommandWrapper cw;
@@ -67,7 +65,7 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 
 	@Override
 	public void handle(Message m, String[] args) {
-		String nick = Helper.getNick(m);
+		String nick = m.getNick();
 		if(args.length < 2){
 			print(nick);
 			return;
@@ -90,7 +88,7 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 			if (args.length < 4) return;
 			StringBuilder sb = new StringBuilder(Helper.implode(args,3));
 			sb.append(" (by ");
-			sb.append(Helper.getNick(m));
+			sb.append(m.getNick());
 			sb.append(')');
 			
 			tasks.add(new Task(args[2], sb.toString()));
