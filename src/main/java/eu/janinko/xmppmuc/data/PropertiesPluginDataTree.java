@@ -90,7 +90,7 @@ public class PropertiesPluginDataTree implements PluginDataTree {
     @Override
     public void removeKey(String key) {
         key = key.replaceAll("\\.", "\\\\.");
-        ppd.props.remove(prefix + "." + key);
+        ppd.props.remove(prefix + key);
         if (ppd.isPersistent()) {
             try {
                 ppd.save();
