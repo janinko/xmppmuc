@@ -52,7 +52,7 @@ public class PluginManagerCommand extends AbstractCommand {
 
 	@Override
 	public String help(String prefix) {
-		return prefix + getCommand() + "((stop|start) command|load fullname)";
+		return prefix + getCommand() + " ((stop|start) command|load fullname)";
 	}
 
 	@Override
