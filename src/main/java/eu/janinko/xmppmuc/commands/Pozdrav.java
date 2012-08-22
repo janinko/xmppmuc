@@ -87,23 +87,29 @@ public class Pozdrav extends AbstractCommand implements PresenceCommand {
         }
     }
 
-    public void connect() {
-		if(logger.isTraceEnabled()){ logger.trace("Participants: "); }
+    @Override
+    public void connected() {
         try {
-			//StringBuilder sb = null;
-			//if(logger.isTraceEnabled()){ sb = new StringBuilder("Participants: "); }
+			StringBuilder sb = null;
+			if(logger.isTraceEnabled()){ sb = new StringBuilder("Participants: "); }
             for ( Occupant member : cw.getCommands().getConnection().getMuc().getParticipants()) {
-				//if(logger.isTraceEnabled()){ sb.append(member.getNick()).append(", "); }
-				if(logger.isTraceEnabled()){ logger.trace("  " + member.getNick()); }
+				if(logger.isTraceEnabled()){ sb.append(member.getNick()).append(", "); }
                 online.add(member.getNick());
             }
-			//if(logger.isTraceEnabled()){ logger.trace(sb.delete(sb.length()-2, sb.length())); }
+			if(logger.isTraceEnabled()){ logger.trace(sb.delete(sb.length()-2, sb.length())); }
+			if(logger.isTraceEnabled()){ sb = new StringBuilder("Moderators: "); }
+            for ( Occupant member : cw.getCommands().getConnection().getMuc().getModerators()) {
+				if(logger.isTraceEnabled()){ sb.append(member.getNick()).append(", "); }
+                online.add(member.getNick());
+            }
+			if(logger.isTraceEnabled()){ logger.trace(sb.delete(sb.length()-2, sb.length())); }
         } catch (XMPPException e) {
             logger.error("Failed to obrain members", e);
         }
     }
 
-    public void disconnect() {
+    @Override
+    public void disconnected() {
         online.clear();
     }
 }
