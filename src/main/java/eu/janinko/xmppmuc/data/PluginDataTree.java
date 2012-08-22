@@ -2,6 +2,7 @@ package eu.janinko.xmppmuc.data;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 
 public interface PluginDataTree {
@@ -26,7 +27,7 @@ public interface PluginDataTree {
 	public PluginDataTree push(String key, String value);
 
 	/** Return Map of keys and values.
-	 *  If no keys are present, it must return empty map.
+	 *  If no key is present, it must return empty map.
 	 *
 	 */
 	public Map<String, String> getMap();
@@ -48,4 +49,11 @@ public interface PluginDataTree {
 	 *
 	 */
         public void removeKey(String key);
+
+	/** Return Set of keys of all subtrees.
+	 *  If no subtree is present, it must return empty set.
+	 *
+	 */
+        public Set<String> getSubtrees();
+;
 }

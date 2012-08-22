@@ -2,7 +2,9 @@ package eu.janinko.xmppmuc.data;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.apache.log4j.Logger;
 
 public class PropertiesPluginDataTree implements PluginDataTree {
@@ -98,4 +100,31 @@ public class PropertiesPluginDataTree implements PluginDataTree {
             }
         }
     }
+
+	@Override
+	public Set<String> getSubtrees() {
+        HashSet<String> ret = new HashSet<String>();
+        int plen = prefix.length();
+		ALL:
+        for(Map.Entry<Object, Object> e : ppd.props.entrySet()){
+            String key = (String) e.getKey();
+            if(key.startsWith(prefix)){
+				key = key.substring(plen);
+                String pseudokey = key.replaceAll("\\\\.", "");
+                if(pseudokey.contains(".")){
+					int index=-1;
+					do{
+						index = key.indexOf('.', index+1);
+						if(index != -1){
+							if(key.charAt(index) != '\\'){
+								ret.add(key.substring(0, index).replaceAll("\\\\.", "."));
+								continue ALL;
+							}
+						}
+					}while(index != -1);
+                }
+            }
+        }
+        return ret;
+	}
 }

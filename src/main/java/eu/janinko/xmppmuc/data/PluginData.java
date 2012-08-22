@@ -4,6 +4,7 @@ import eu.janinko.xmppmuc.commands.Command;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class PluginData implements PluginDataTree {
     protected boolean persistent = false;
@@ -60,5 +61,10 @@ public abstract class PluginData implements PluginDataTree {
     @Override
     public void removeKey(String key) {
         data.removeKey(key);
+    }
+    
+    @Override
+    public Set<String> getSubtrees() {
+        return data.getSubtrees();
     }
 }
