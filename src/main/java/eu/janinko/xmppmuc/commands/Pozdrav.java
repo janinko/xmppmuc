@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.muc.Affiliate;
+import org.jivesoftware.smackx.muc.Occupant;
 
 public class Pozdrav extends AbstractCommand implements PresenceCommand {
 
@@ -88,9 +89,13 @@ public class Pozdrav extends AbstractCommand implements PresenceCommand {
 
     public void connect() {
         try {
-            for (Affiliate member : cw.getCommands().getConnection().getMuc().getMembers()) {
+			StringBuilder sb = null;
+			if(logger.isTraceEnabled()){ sb = new StringBuilder("Participants: "); }
+            for ( Occupant member : cw.getCommands().getConnection().getMuc().getParticipants()) {
+				if(logger.isTraceEnabled()){ sb.append(member.getNick()).append(", "); }
                 online.add(member.getNick());
             }
+			if(logger.isTraceEnabled()){ logger.trace(sb.delete(sb.length()-2, sb.length())); }
         } catch (XMPPException e) {
             logger.error("Failed to obrain members", e);
         }
