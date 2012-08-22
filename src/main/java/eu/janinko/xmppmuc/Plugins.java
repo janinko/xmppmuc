@@ -206,6 +206,7 @@ public class Plugins {
 
 	public boolean removeCommand(String command){
 		if(!commands.containsKey(command)) return false;
+		if(logger.isDebugEnabled()){logger.debug("Removing command " + command);}
 		
 		CommandWrapper cw = commands.get(command);
 		commands.remove(command);
