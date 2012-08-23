@@ -1,7 +1,13 @@
 package eu.janinko.xmppmuc.commands;
 
-
+/** Abstract class helping with implementing {@link Command} interface. 
+ * 
+ * @author Honza Brázdil <janinko.g@gmail.com>
+ * @see Command
+ */
 public abstract class AbstractCommand implements Command {
+	
+	public AbstractCommand(){}
 
 	@Override
 	public String help(String prefix) {
