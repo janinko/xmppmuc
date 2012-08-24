@@ -10,7 +10,7 @@ public abstract class PluginData implements PluginDataTree {
     protected boolean persistent = false;
     protected PluginDataTree data;
     protected Class<? extends Command> clazz;
-    public static String DATA_PATH = System.getProperty("user.home") + "/.xmppmuc/plugins/data/";
+    protected static String DATA_PATH = System.getProperty("user.home") + "/.xmppmuc/plugins/data/";
     
     public PluginData(Class<? extends Command> clazz) {
         this.clazz = clazz;
