@@ -44,12 +44,24 @@ public final class PropertiesPluginData extends PluginData {
     @Override
     public void save() throws IOException {
         if(logger.isTraceEnabled()){logger.trace("Saving properties to " + file);}
-        props.store(new FileWriter(file), null);
+		FileWriter fw = null;
+		try{
+			fw = new FileWriter(file);
+			props.store(fw, null);
+		}finally{
+			if(fw != null) fw.close();
+		}
     }
 
     @Override
     public void load() throws FileNotFoundException, IOException {
-        props.load(new FileReader(file));
+		FileReader fw = null;
+		try{
+			fw = new FileReader(file);
+			props.load(fw);
+		}finally{
+			if(fw != null) fw.close();
+		}
         data = new PropertiesPluginDataTree(this);
 
         /*  //This could be used if we were backing to memory, not Properties
