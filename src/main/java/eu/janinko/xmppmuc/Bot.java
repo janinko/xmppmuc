@@ -64,11 +64,13 @@ public class Bot {
 	 *
 	 */
 	public void sleep() {
-		synchronized (this) {
-			try {
-				this.wait();
-			} catch (InterruptedException ex) {
-				logger.warn("Waiting for connection to finish interupted.");
+		if (connection.isConnected()) {
+			synchronized (this) {
+				try {
+					this.wait();
+				} catch (InterruptedException ex) {
+					logger.warn("Waiting for connection to finish interupted.");
+				}
 			}
 		}
 	}
