@@ -28,15 +28,25 @@ public class Commands {
 		this.bot = bot;
 	}
 
+    /**
+	 * Returns current command prefix.
+	 *
+	 * @return Command prefix.
+	 */
 	public String getPrefix() {
 		return prefix;
 	}
 
+    /**
+	 * Sets command prefix. Default is '.' (dot).
+	 *
+	 * @param prefix Command prefix.
+	 */
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 
-	public void setMuc(MultiUserChat muc) {
+	void setMuc(MultiUserChat muc) {
 		if(logger.isTraceEnabled()){logger.trace("Setting muc: "+muc);}
 		this.muc = muc;
 		if(muc == null){
@@ -46,7 +56,7 @@ public class Commands {
 		}
 	}
 
-	public void handlePresence(Presence presence) {
+	void handlePresence(Presence presence) {
 		if(muc == null) return;
 
 		for(CommandWrapper cw : plugins.getPresencePlugins()){
@@ -56,7 +66,7 @@ public class Commands {
 		}
 	}
 
-	public void handleMessage(Message message) {
+	void handleMessage(Message message) {
 		if(muc == null) return;
 		
 		if(message.getBody().startsWith(prefix)){
@@ -70,7 +80,7 @@ public class Commands {
 		}
 	}
 	
-	public void handleCommand(Message message) {
+	void handleCommand(Message message) {
 		if(muc == null) return;
 		
 		String[] command = message.getBody().substring(prefix.length()).split(" +");
@@ -140,11 +150,16 @@ public class Commands {
 		return priv;
 	}
 
+    /**
+	 * Returns {@link XmppConnection}.
+	 *
+	 * @return XmppConnection that handle connection to XMPP server and MUC.
+	 */
 	public XmppConnection getConnection() {
 		return connection;
 	}
 
-	public Plugins getPlugins() {
+	Plugins getPlugins() {
 		return plugins;
 	}
 
@@ -152,12 +167,17 @@ public class Commands {
 		privs.put(userJid.toLowerCase(), decode);		
 	}
 
-	public void setConnection(XmppConnection xmppConnection) {
+	void setConnection(XmppConnection xmppConnection) {
 		this.connection = xmppConnection;
 	}
-	
-        public Bot getBot(){
-            return bot;
-        }
+
+    /**
+     * Returns {@link Bot} instance.
+	 *
+	 * @return Bot instance.
+	 */
+    public Bot getBot(){
+        return bot;
+    }
 
 }
