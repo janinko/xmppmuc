@@ -56,7 +56,7 @@ public class Commands {
 		}
 	}
 
-	void handlePresence(Presence presence) {
+	public void handlePresence(Presence presence) {
 		if(muc == null) return;
 
 		for(CommandWrapper cw : plugins.getPresencePlugins()){
@@ -66,7 +66,7 @@ public class Commands {
 		}
 	}
 
-	void handleMessage(Message message) {
+	public void handleMessage(Message message) {
 		if(muc == null) return;
 		
 		if(message.getBody().startsWith(prefix)){
@@ -80,7 +80,7 @@ public class Commands {
 		}
 	}
 	
-	void handleCommand(Message message) {
+	private void handleCommand(Message message) {
 		if(muc == null) return;
 		
 		String[] command = message.getBody().substring(prefix.length()).split(" +");
