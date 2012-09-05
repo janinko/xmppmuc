@@ -10,6 +10,27 @@
   <url>http://janinko.eu/xmppmuc</url>
   <description>Bot for MultiUser Chat at XMPP protocol</description>
 
+  <developers>
+    <developer>
+      <id>janinko</id>
+      <name>Honza Brázdil</name>
+      <email>janinko.g@gmail.com</email>
+      <url>http://janinko.eu</url>
+      <timezone>Europe/Prague</timezone>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/janinko/xmppmuc.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:janinko/xmppmuc.git</developerConnection>
+    <url>https://github.com/janinko/xmppmuc</url>
+  </scm>
+
+  <issueManagement>
+    <system>github</system>
+    <url>https://github.com/janinko/xmppmuc/issues</url>
+  </issueManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
