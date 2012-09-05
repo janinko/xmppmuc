@@ -66,7 +66,7 @@ public class Commands {
 		for(CommandWrapper cw : plugins.getMessagePlugins()){
 			MessageCommand command = (MessageCommand) cw.command;
                         if(logger.isTraceEnabled()){logger.trace("Handling message with: " + command);}
-			command.handleMessage(new eu.janinko.xmppmuc.Message(message));
+			command.handleMessage(new eu.janinko.xmppmuc.Message(message,this));
 		}
 	}
 	
@@ -88,7 +88,7 @@ public class Commands {
 			if(cw == null) return;
 			Command c = cw.command;
 			if(c.getPrivLevel() <= priv){
-				c.handle(new eu.janinko.xmppmuc.Message(message), command);
+				c.handle(new eu.janinko.xmppmuc.Message(message,this), command);
 			}else if(logger.isInfoEnabled()){
 				logger.info("User " + from + " (priv " + priv + ") tried to do '" + message.getBody() + "' (priv " + c.getPrivLevel() + ")");
 			}
