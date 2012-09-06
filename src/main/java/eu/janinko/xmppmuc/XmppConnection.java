@@ -5,6 +5,7 @@ import eu.janinko.xmppmuc.listeners.InvitationRejectionListenerLogger;
 import eu.janinko.xmppmuc.listeners.PacketListenerLogger;
 import eu.janinko.xmppmuc.listeners.ParticipantStatusListenerLogger;
 import eu.janinko.xmppmuc.listeners.PluginsPacketListener;
+import eu.janinko.xmppmuc.listeners.PluginsParticipantStatusListener;
 import eu.janinko.xmppmuc.listeners.SubjectUpdatedListenerLogger;
 import eu.janinko.xmppmuc.listeners.UserStatusListenerLogger;
 import eu.janinko.xmppmuc.listeners.XmppConnectionListener;
@@ -114,6 +115,7 @@ public class XmppConnection {
 		logger.info("Connected");
 		commands.setMuc(muc);
 		connection.addPacketListener(new PluginsPacketListener(commands), messageFilter);
+		muc.addParticipantStatusListener(new PluginsParticipantStatusListener(commands));
 		return true;
 	}
 
