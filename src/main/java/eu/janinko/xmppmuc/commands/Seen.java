@@ -2,6 +2,7 @@ package eu.janinko.xmppmuc.commands;
 
 import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.Helper;
+import eu.janinko.xmppmuc.Status;
 import eu.janinko.xmppmuc.data.PluginData;
 import eu.janinko.xmppmuc.data.PluginDataTree;
 import java.io.FileNotFoundException;
@@ -32,12 +33,8 @@ public class Seen extends AbstractCommand implements PresenceCommand, MessageCom
 		pd = cw.getConfig();
         pd.setPersistent(false);
 		data = pd.getDataTree("seen");
-		try {
-			loadConfig();
-		} catch (Exception e) {
-			logger.warn("Couldn't load config",e);
-			seeny = new HashMap<String,Pritomnost>();
-		}
+		seeny = new HashMap<String,Pritomnost>();
+		loadConfig();
 	}
 
 	@Override
@@ -114,7 +111,17 @@ public class Seen extends AbstractCommand implements PresenceCommand, MessageCom
 		pd.save();
 	}
 	
-	private void loadConfig() throws IOException, ClassNotFoundException{/*
+	private void loadConfig() {
+		for(String key : data.getSubtrees()){
+			if(logger.isTraceEnabled()){logger.trace("Found key: " + key);}
+			try{
+				seeny.put(key, new Pritomnost(data.getDataTree(key)));
+			}catch(IllegalArgumentException e){
+				
+				logger.error("Failed to initialize Pritomnost. Key: " + key + "; data: " + data.getDataTree(key).getMap(), e);
+			}
+		}
+		/*
 		File f = cw.getConfigFile();
 		ObjectInputStream is = new ObjectInputStream(new FileInputStream(f));
 
@@ -123,6 +130,8 @@ public class Seen extends AbstractCommand implements PresenceCommand, MessageCom
 		this.seeny = seeny;
 		is.close();*/
 	}
+
+	public void handleStatus(Status s) {}
 	
 	private static class Pritomnost implements Serializable{
 		private static final long serialVersionUID = 1L;
@@ -137,7 +146,7 @@ public class Seen extends AbstractCommand implements PresenceCommand, MessageCom
 		private static final String PRESENCE = "presence";
 		private static final String MESSAGE = "message";
 
-		Pritomnost(Presence.Type type){
+		public Pritomnost(Presence.Type type){
 			date = new Date();
 			presence = type;
 			message = null;
@@ -149,7 +158,7 @@ public class Seen extends AbstractCommand implements PresenceCommand, MessageCom
 			message = type;
 		}
 		
-		public void Pritomnost(PluginDataTree dt){
+		public Pritomnost(PluginDataTree dt){
 			if(!dt.containsKey(DATE) || !(dt.containsKey(PRESENCE) || dt.containsKey(MESSAGE)) )
 				throw new IllegalArgumentException("DataTree don't have required data.");
 			
@@ -166,7 +175,7 @@ public class Seen extends AbstractCommand implements PresenceCommand, MessageCom
 				if(presence == null)
 					throw new IllegalArgumentException("DataTree don't have required data.");
 			}else{
-				message = Message.Type.valueOf(dt.getValue(DATE));
+				message = Message.Type.valueOf(dt.getValue(MESSAGE));
 				if(message == null)
 					throw new IllegalArgumentException("DataTree don't have required data.");
 			}
