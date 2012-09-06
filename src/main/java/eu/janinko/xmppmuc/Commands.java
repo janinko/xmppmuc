@@ -56,6 +56,16 @@ public class Commands {
 		}
 	}
 
+	public void handleStatus(Status status) {
+		if(muc == null) return;
+
+		for(CommandWrapper cw : plugins.getPresencePlugins()){
+			PresenceCommand command = (PresenceCommand) cw.command;
+                        if(logger.isTraceEnabled()){logger.trace("Handling status with: " + command);}
+			command.handleStatus(status);
+		}
+	}
+
 	public void handleMessage(Message message) {
 		if(muc == null) return;
 		
