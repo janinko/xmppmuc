@@ -61,5 +61,24 @@ public class Status {
 	public String getNick() {
 		return participant.split("/")[1];
 	}
-	
+
+	public Type getType() {
+		return type;
+	}
+
+	public String getParticipant() {
+		return participant;
+	}
+
+	public String getNewNickname() {
+		return newNickname;
+	}
+
+	public String getActor() {
+		return actor;
+	}
+
+	public String getReason() {
+		return reason;
+	}
 }
