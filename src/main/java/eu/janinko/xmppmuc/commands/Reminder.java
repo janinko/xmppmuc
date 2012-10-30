@@ -47,7 +47,7 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 	@Override
 	public String help(String prefix) {
 		return "Syntaxe pro prikaz "+getCommand()+" je:\n"
-			       + prefix + getCommand() + " vypis [nick]\n"
+			       + prefix + getCommand() + " [vypis [nick]]\n"
 			       + prefix + getCommand() + " ok\n"
 			       + prefix + getCommand() + " pridej nick zprava";
 	}
@@ -74,9 +74,11 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 			sb.append(" (by ");
 			sb.append(m.getNick());
 			sb.append(')');
+
+			String receiver = args[2].toLowerCase();
 			
-			data.getDataTree(args[2]).push(String.valueOf(sb.toString().hashCode()), sb.toString());
-			logger.info("Pridana pripominka pro " + args[2] + ": " + sb);
+			data.getDataTree(receiver).push(String.valueOf(sb.toString().hashCode()), sb.toString());
+			logger.info("Pridana pripominka pro " + receiver + ": " + sb);
 			cw.sendMessage("Jasně! Budu to " + args[2] + " omlacovat o hlavu!");
 		}
 	}
@@ -87,6 +89,11 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 		sb.append(": ");
 		
 		for(Entry<String, String> e : data.getDataTree(nick).getMap().entrySet()){
+			sb.append(e.getValue());
+			sb.append('\n');
+			count++;
+		}
+		for(Entry<String, String> e : data.getDataTree(nick.toLowerCase()).getMap().entrySet()){
 			sb.append(e.getValue());
 			sb.append('\n');
 			count++;
@@ -122,7 +129,7 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 		if (count > 0) {
 			cw.sendMessage(nick + ": Máš u mě nevřízené zprávy, celkem "
 					+ count + ". Pro precteni dej "
-					+ cw.getCommands().getPrefix() + getCommand() + " vypis");
+					+ cw.getCommands().getPrefix() + getCommand() + " [vypis]");
 		}
 	}
 }
