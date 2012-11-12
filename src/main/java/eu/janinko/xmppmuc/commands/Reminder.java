@@ -12,16 +12,16 @@ import org.jivesoftware.smack.packet.Presence;
 
 public class Reminder extends AbstractCommand implements PresenceCommand {
 	private CommandWrapper cw;
-	
+
 	private static Logger logger = Logger.getLogger(PluginManagerCommand.class);
 	private PluginData data;
-	
+
 	public Reminder() {
 	}
-	
+
 	public Reminder(CommandWrapper CommandWrapper) {
 		cw = CommandWrapper;
-		
+
 		data = cw.getConfig();
 	}
 
@@ -47,9 +47,9 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 	@Override
 	public String help(String prefix) {
 		return "Syntaxe pro prikaz "+getCommand()+" je:\n"
-			       + prefix + getCommand() + " [vypis [nick]]\n"
-			       + prefix + getCommand() + " ok\n"
-			       + prefix + getCommand() + " pridej nick zprava";
+		               + prefix + getCommand() + " [vypis [nick]]\n"
+		               + prefix + getCommand() + " ok\n"
+		               + prefix + getCommand() + " pridej nick zprava";
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 			print(nick);
 			return;
 		}
-		
+
 		if("ok".equals(args[1])){
 			deactivate(nick);
 		}else if("vypis".equals(args[1])){
@@ -76,23 +76,18 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 			sb.append(')');
 
 			String receiver = args[2].toLowerCase();
-			
+
 			data.getDataTree(receiver).push(String.valueOf(sb.toString().hashCode()), sb.toString());
 			logger.info("Pridana pripominka pro " + receiver + ": " + sb);
 			cw.sendMessage("Jasně! Budu to " + args[2] + " omlacovat o hlavu!");
 		}
 	}
-	
+
 	private void print(String nick){
 		int count=0;
 		StringBuilder sb = new StringBuilder(nick);
 		sb.append(": ");
-		
-		for(Entry<String, String> e : data.getDataTree(nick).getMap().entrySet()){
-			sb.append(e.getValue());
-			sb.append('\n');
-			count++;
-		}
+
 		for(Entry<String, String> e : data.getDataTree(nick.toLowerCase()).getMap().entrySet()){
 			sb.append(e.getValue());
 			sb.append('\n');
@@ -105,16 +100,16 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 		}
 		logger.debug("Vytisteno " + count + " pripominek pro " + nick);
 	}
-	
+
 	private void deactivate(String nick){
-		for(Entry<String, String> e : data.getDataTree(nick).getMap().entrySet()){
-			data.getDataTree(nick).removeKey(e.getKey());
+		for(Entry<String, String> e : data.getDataTree(nick.toLowerCase()).getMap().entrySet()){
+			data.getDataTree(nick.toLowerCase()).removeKey(e.getKey());
 		}
 	}
 
 	@Override
 	public void handlePresence(Presence p) {}
-	
+
 	@Override
 	public void handleStatus(Status s) {
 		if (s.getType() != Status.Type.joined) {
@@ -122,7 +117,7 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 		}
 		String nick = s.getNick();
 		int count = 0;
-		for(Entry<String, String> e : data.getDataTree(nick).getMap().entrySet()){
+		for(Entry<String, String> e : data.getDataTree(nick.toLowerCase()).getMap().entrySet()){
 			count++;
 		}
 
