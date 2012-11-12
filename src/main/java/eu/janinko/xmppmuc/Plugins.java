@@ -207,6 +207,7 @@ public class Plugins {
 	}
 
 	public boolean removeCommand(String command){
+		if(logger.isTraceEnabled()){logger.trace("Removing command: '" + command + "' commands: " + commands);}
 		if(!commands.containsKey(command)) return false;
 		if(logger.isDebugEnabled()){logger.debug("Removing command " + command);}
 		

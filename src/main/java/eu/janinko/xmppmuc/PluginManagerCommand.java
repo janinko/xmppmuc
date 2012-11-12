@@ -16,7 +16,6 @@ public class PluginManagerCommand extends AbstractCommand {
 	
 	public PluginManagerCommand(CommandWrapper commandWrapper){
 		cw = commandWrapper;
-		plugins = cw.getCommands().getPlugins();
 	}
 
 	@Override
@@ -30,8 +29,12 @@ public class PluginManagerCommand extends AbstractCommand {
 	}
 
 	@Override
+	public void connected(){
+		plugins = cw.getCommands().getPlugins();
+	}
+
+	@Override
 	public void handle(Message m, String[] args) {
-		logger.debug("got command: " + Arrays.toString(args));
 		if(args[1].equals("stop")){
 			logger.info("request stop command: " + args[2]);
 			if(plugins.removeCommand(args[2])){
