@@ -69,7 +69,7 @@ public class Commands {
 	public void handleMessage(Message message) {
 		if(muc == null) return;
 		
-		if(message.getBody().startsWith(prefix)){
+		if(message.getBody().startsWith(prefix) || message.getBody().startsWith(connection.getNick())){
 			handleCommand(message);
 			return;
 		}
@@ -79,11 +79,23 @@ public class Commands {
 			command.handleMessage(new eu.janinko.xmppmuc.Message(message,this));
 		}
 	}
-	
+
 	public void handleCommand(Message message) {
 		if(muc == null) return;
-		
-		String[] command = message.getBody().substring(prefix.length()).split(" +");
+
+		String body = message.getBody();
+		if(body.startsWith(prefix)){
+			body = body.substring(prefix.length());
+		}else{ //(message.getBody().startsWith(connection.getNick()){
+			body = body.substring(connection.getNick().length());
+			if(body.matches("[:>]? .*")){
+				body = body.substring(1).trim();
+			}else{
+				return;
+			}
+		}
+
+		String[] command = body.split(" +");
 		if(logger.isTraceEnabled()){logger.trace("Handling command: " + Arrays.toString(command));}
 		
 		String from = message.getFrom();
