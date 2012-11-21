@@ -16,6 +16,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.FromMatchesFilter;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 /**
@@ -91,9 +92,11 @@ public class XmppConnection {
 			return false;
 		}
 
+		DiscussionHistory dh = new DiscussionHistory();
+		dh.setMaxChars(0);
 		muc = new MultiUserChat(connection, room);
 		try {
-			muc.join(nick);
+			muc.join(nick, null, dh, 5000);
 		} catch (XMPPException e) {
 			logger.error("Connection to room failed", e);
 			return false;
