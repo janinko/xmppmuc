@@ -89,6 +89,8 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 		sb.append(": ");
 
 		for(Entry<String, String> e : data.getDataTree(nick.toLowerCase()).getMap().entrySet()){
+			sb.append(Integer.toHexString(Integer.valueOf(e.getKey())));
+			sb.append(" : ");
 			sb.append(e.getValue());
 			sb.append('\n');
 			count++;
