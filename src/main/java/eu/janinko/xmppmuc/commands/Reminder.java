@@ -6,6 +6,7 @@ import eu.janinko.xmppmuc.Message;
 import eu.janinko.xmppmuc.PluginManagerCommand;
 import eu.janinko.xmppmuc.Status;
 import eu.janinko.xmppmuc.data.PluginData;
+import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Presence;
@@ -48,7 +49,7 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 	public String help(String prefix) {
 		return "Syntaxe pro prikaz "+getCommand()+" je:\n"
 		               + prefix + getCommand() + " [vypis [nick]]\n"
-		               + prefix + getCommand() + " ok\n"
+		               + prefix + getCommand() + " ok [cislo ...|vse]\n"
 		               + prefix + getCommand() + " pridej nick zprava";
 	}
 
@@ -61,7 +62,15 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 		}
 
 		if("ok".equals(args[1])){
-			deactivate(nick);
+			if(args.length == 2){
+				deleteOne(nick);
+			}else{
+				if("vse".equals(2)){
+					deactivate(nick);
+				}else{
+					delete(nick, args);
+				}
+			}
 		}else if("vypis".equals(args[1])){
 			if(args.length < 3){
 				print(nick);
@@ -128,5 +137,25 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 					+ count + ". Pro precteni dej "
 					+ cw.getCommands().getPrefix() + getCommand() + " [vypis]");
 		}
+	}
+
+	private void deleteOne(String nick) {
+		Map<String, String> messages = data.getDataTree(nick.toLowerCase()).getMap();
+		if(messages.size() == 1){
+			String key = messages.keySet().iterator().next();
+			data.getDataTree(nick.toLowerCase()).removeKey(key);
+		}
+	}
+
+	private void delete(String nick, String[] args) {
+		for(int i=2; i<args.length; i++){
+			try{
+				String key = Integer.valueOf(args[i], 16).toString();
+				data.getDataTree(nick.toLowerCase()).removeKey(key);
+			}catch(NumberFormatException ex){
+				//
+			}
+		}
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 }
