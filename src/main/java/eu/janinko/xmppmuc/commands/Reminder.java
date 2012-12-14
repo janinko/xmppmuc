@@ -65,7 +65,7 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 			if(args.length == 2){
 				deleteOne(nick);
 			}else{
-				if("vse".equals(2)){
+				if("vse".equals(args[2])){
 					deactivate(nick);
 				}else{
 					delete(nick, args);
