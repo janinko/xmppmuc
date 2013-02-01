@@ -52,8 +52,9 @@ public class Bot {
 	 *
 	 */
 	public void stop() {
-		connection.stop();
-		connection = new XmppConnection(connection);
+		logger.debug("Bot is being stopped.");
+		connection.stop(); // destroy connection
+		connection = new XmppConnection(connection); // make new connection redy for reconnection
 		synchronized (this) {
 			this.notify();
 		}
