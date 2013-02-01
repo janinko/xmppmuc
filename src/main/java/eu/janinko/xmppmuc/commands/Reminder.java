@@ -92,7 +92,7 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 		}
 	}
 
-	private void print(String nick){
+	private String getMessage(String nick){
 		int count=0;
 		StringBuilder sb = new StringBuilder(nick);
 		sb.append(": ");
@@ -104,12 +104,18 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 			sb.append('\n');
 			count++;
 		}
+		if(count == 0) return null;
 		sb.deleteCharAt(sb.length()-1);
+		logger.debug("Nalezeno " + count + " pripominek pro " + nick);
+		return sb.toString();
+	}
 
-		if(count > 0){
-			cw.sendMessage(sb.toString());
+	private void print(String nick){
+		String msg = getMessage(nick);
+
+		if(msg != null){
+			cw.sendMessage(msg);
 		}
-		logger.debug("Vytisteno " + count + " pripominek pro " + nick);
 	}
 
 	private void deactivate(String nick){
@@ -127,15 +133,15 @@ public class Reminder extends AbstractCommand implements PresenceCommand {
 			return;
 		}
 		String nick = s.getNick();
+
+		String msg = getMessage(nick);
 		int count = 0;
 		for(Entry<String, String> e : data.getDataTree(nick.toLowerCase()).getMap().entrySet()){
 			count++;
 		}
 
-		if (count > 0) {
-			cw.sendMessage(nick + ": Máš u mě nevřízené zprávy, celkem "
-					+ count + ". Pro precteni dej "
-					+ cw.getCommands().getPrefix() + getCommand() + " [vypis]");
+		if (msg != null) {
+			cw.sendPrivateMessage(nick, msg);
 		}
 	}
 
