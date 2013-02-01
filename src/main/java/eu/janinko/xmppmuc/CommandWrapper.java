@@ -5,6 +5,7 @@ import eu.janinko.xmppmuc.commands.PluginBuildException;
 import eu.janinko.xmppmuc.data.PluginData;
 import eu.janinko.xmppmuc.data.PropertiesPluginData;
 import java.io.File;
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Message;
 
 /** Middle layer between Command and MucCommands,
@@ -16,6 +17,8 @@ public class CommandWrapper {
 	private Commands commands;
 	Command command;
 	PluginData data;
+
+	private static Logger logger = Logger.getLogger(CommandWrapper.class);
 	
 	public CommandWrapper(Command c, Commands commands)  throws PluginBuildException{
 		this.commands = commands;
@@ -36,6 +39,7 @@ public class CommandWrapper {
 	}
 
 	public void sendPrivateMessage(String nick, Message message){
+		if(logger.isTraceEnabled()){logger.trace("Sending private message to " + nick + ": " + message.getBody());}
 		message.setTo(commands.getConnection().getRoom()+"/"+nick);
 		message.setType(Message.Type.chat);
 		sendMessage(message);
