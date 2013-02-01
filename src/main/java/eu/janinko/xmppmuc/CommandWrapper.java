@@ -34,6 +34,18 @@ public class CommandWrapper {
 	public void sendMessage(Message message) {
 		commands.getConnection().sendsMessage(message);
 	}
+
+	public void sendPrivateMessage(String nick, Message message){
+		message.setTo(commands.getConnection().getRoom()+"/"+nick);
+		message.setType(Message.Type.chat);
+		sendMessage(message);
+	}
+
+	public void sendPrivateMessage(String nick, String message){
+		Message m = new Message();
+		m.setBody(message);
+		sendPrivateMessage(nick,m);
+	}
 	
 	@Deprecated
 	public File getConfigFile(){
