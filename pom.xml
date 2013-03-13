@@ -9,6 +9,10 @@
   <name>XMPP MUC Bot</name>
   <url>http://janinko.eu/xmppmuc</url>
   <description>Bot for MultiUser Chat at XMPP protocol</description>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <developers>
     <developer>
