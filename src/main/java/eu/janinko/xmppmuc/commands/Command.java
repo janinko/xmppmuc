@@ -12,14 +12,12 @@ import eu.janinko.xmppmuc.Message;
  */
 public interface Command {
 
-	/** Builds new {@link Command} and provides it with wrapper.
+	/** Provides new {@link Command} and with wrapper.
 	 * This method is invoked when plugin is loaded.
 	 * 
 	 * @param commandWrapper Wrapper for this {@link Command}.
-	 * @return New {@link Command} object.
-	 * @throws PluginBuildException When Building of {@link Command} fails.
 	 */
-	Command build(CommandWrapper commandWrapper) throws PluginBuildException;
+	void setWrapper(CommandWrapper commandWrapper);
 	
 	/** Returns muc command string.
 	 * 
@@ -50,11 +48,6 @@ public interface Command {
 	 * @see Privset
 	 */
 	int getPrivLevel();
-	
-	/** Clean all plugin mess. 
-	 * This method is invoked when stopping plugin. It should clean all its mess eg: stop threads, release resources, etc.
-	 */
-	void destroy();
 
 	/** This method is invoked when bot connects to MUC.
 	 */

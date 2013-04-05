@@ -23,15 +23,10 @@ public class Message {
 	}
 
 	public Chat getTarget(){
-		try{
-			logger.trace(message.getThread());
-			logger.trace(commands.getConnection().connection.getChatManager().getThreadChat(message.getThread()));
-			logger.trace(commands.getConnection().connection.getChatManager().getThreadChat(message.getThread()).getParticipant());
-			return commands.getConnection().connection.getChatManager().getThreadChat(message.getThread());
-		}catch(Exception e){
-			logger.warn("Exception cought", e);
-			return null;
-		}
+		logger.trace(message.getThread());
+		logger.trace(commands.getConnection().connection.getChatManager().getThreadChat(message.getThread()));
+		logger.trace(commands.getConnection().connection.getChatManager().getThreadChat(message.getThread()).getParticipant());
+		return commands.getConnection().connection.getChatManager().getThreadChat(message.getThread());
 	}
 	
 

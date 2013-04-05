@@ -2,7 +2,6 @@ package eu.janinko.xmppmuc;
 
 import eu.janinko.xmppmuc.commands.Command;
 import eu.janinko.xmppmuc.commands.MessageCommand;
-import eu.janinko.xmppmuc.commands.PluginBuildException;
 import eu.janinko.xmppmuc.commands.PresenceCommand;
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,52 +18,47 @@ import java.util.HashSet;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.WeakHashMap;
 import org.apache.log4j.Logger;
 
 public class Plugins {
-	String pluginDir = System.getProperty("user.home") + "/.xmppmuc/plugins/";
-	private String pluginDirectoryPath = pluginDir + "jar/";
+	private static final String PLUGIN_DIR = Bot.DATA_DIR + "plugins/";
+	private static final String PLUGIN_JAR_DIR = PLUGIN_DIR + "jar/";
+	private static Logger logger = Logger.getLogger(Plugins.class);
 	
 	private Commands commandsManager;
 
-	private HashMap<String, CommandWrapper> commands = new HashMap<String, CommandWrapper>();
-	private HashSet<CommandWrapper> plugins = new HashSet<CommandWrapper>();
-	private HashSet<CommandWrapper> presencePlugins = new HashSet<CommandWrapper>();
-	private HashSet<CommandWrapper> messagePlugins = new HashSet<CommandWrapper>();
+	private HashMap<String, CommandWrapper> commands = new HashMap<>();
+	private HashSet<CommandWrapper> plugins = new HashSet<>();
+	private HashSet<CommandWrapper> presencePlugins = new HashSet<>();
+	private HashSet<CommandWrapper> messagePlugins = new HashSet<>();
+
+	private XmppmucClassLoader rootClassLoader = new XmppmucClassLoader(getClass().getClassLoader());
 	
-	private static Logger logger = Logger.getLogger(Plugins.class);
-	
-	public Plugins(Commands cm) {
+	public void setCommands(Commands cm) {
 		commandsManager = cm;
-		
-		loadPlugins();
-		loadPluginsFromConfigFile();
 	}
-	
-	
+
 	public final void loadPlugins(){
 		StringBuilder sb = new StringBuilder("Loaded plugins: ");
 
 		try{
 			for(Command c : ServiceLoader.load(Command.class)){
-				try{
-					CommandWrapper cw = new CommandWrapper(c,commandsManager);
-					plugins.add(cw);
-					commands.put(c.getCommand(), cw);
-					if(c instanceof MessageCommand){
-						messagePlugins.add(cw);
-					}
-					if(c instanceof PresenceCommand){
-						presencePlugins.add(cw);
-					}
-					if(commandsManager.getConnection() != null && commandsManager.getConnection().isConnected()){
-						cw.command.connected();
-					}
-					sb.append(c.getCommand());
-					sb.append(", ");
-				}catch (PluginBuildException e) {
-					logger.error("Building of plugin failed", e);
+				CommandWrapper cw = new CommandWrapper(c, commandsManager);
+				c.setWrapper(cw);
+				plugins.add(cw);
+				commands.put(c.getCommand(), cw);
+				if (c instanceof MessageCommand) {
+					messagePlugins.add(cw);
 				}
+				if (c instanceof PresenceCommand) {
+					presencePlugins.add(cw);
+				}
+				if (commandsManager.getConnection() != null && commandsManager.getConnection().isConnected()) {
+					cw.command.connected();
+				}
+				sb.append(c.getCommand());
+				sb.append(", ");
 			}
 		}catch(ServiceConfigurationError e){
 			if(e.getCause() instanceof InstantiationException){
@@ -76,13 +70,12 @@ public class Plugins {
 		sb.delete(sb.length()-2,sb.length());
 		logger.info(sb.toString());
 	}
-	
 
 	public boolean loadPlugin(String binaryName){
 		logger.info("Loading plugin: " + binaryName);
-		File pluginDirectory = new File(pluginDirectoryPath);
+		File pluginDirectory = new File(PLUGIN_JAR_DIR);
 		
-		ArrayList<URL> urls = new ArrayList<URL>();
+		ArrayList<URL> urls = new ArrayList<>();
 		for(File f : pluginDirectory.listFiles()){
 			if(logger.isTraceEnabled()){logger.trace("Checking file: " + f.getAbsolutePath());}
 			try {
@@ -93,7 +86,7 @@ public class Plugins {
 			}
 		}
 		
-		URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+		URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]));//, getClass().getClassLoader());
 
 		Class<?> clazz;
 		try {
@@ -106,21 +99,15 @@ public class Plugins {
 		Object o;
 		try {
 			o = clazz.newInstance();
-		} catch (InstantiationException e) {
-			logger.error("Failed to load plugin: " + binaryName, e);
-			return false;
-		} catch (IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			logger.error("Failed to load plugin: " + binaryName, e);
 			return false;
 		}
-		
-		CommandWrapper cw;
-		try {
-			cw = new CommandWrapper((Command) o,commandsManager);
-		} catch (PluginBuildException e) {
-			logger.error("Failed to load plugin: " + binaryName, e);
-			return false;
-		}
+		rootClassLoader.addClassLoader(classLoader);
+
+		Command c = (Command) o;
+		CommandWrapper cw = new CommandWrapper(c,commandsManager);
+		c.setWrapper(cw);
 		
 		plugins.add(cw);
 		commands.put(cw.command.getCommand(), cw);
@@ -139,7 +126,7 @@ public class Plugins {
 	}
 	
 	public final void loadPluginsFromConfigFile(){
-		String path = pluginDir + "plugins";
+		String path = PLUGIN_DIR + "plugins";
 		BufferedReader in=null;
 		try {
 			in = new BufferedReader(new FileReader(path));
@@ -167,25 +154,21 @@ public class Plugins {
 			return false;
 		for(Command c : ServiceLoader.load(Command.class)){
 			if(c.getCommand().equals(command)){
-				try {
-					CommandWrapper cw = new CommandWrapper(c,commandsManager);
-					plugins.add(cw);
-					commands.put(c.getCommand(), cw);
-					if(c instanceof MessageCommand){
-						messagePlugins.add(cw);
-					}
-					if(c instanceof PresenceCommand){
-						presencePlugins.add(cw);
-					}
-					logger.info("Plugin " + command + " started.");
-					if(commandsManager.getConnection() != null && commandsManager.getConnection().isConnected()){
-						cw.command.connected();
-					}
-					return true;
-				} catch (PluginBuildException e) {
-					logger.error("Failed to start plugin: " + command, e);
-					return false;
+				CommandWrapper cw = new CommandWrapper(c, commandsManager);
+				c.setWrapper(cw);
+				plugins.add(cw);
+				commands.put(c.getCommand(), cw);
+				if (c instanceof MessageCommand) {
+					messagePlugins.add(cw);
 				}
+				if (c instanceof PresenceCommand) {
+					presencePlugins.add(cw);
+				}
+				logger.info("Plugin " + command + " started.");
+				if (commandsManager.getConnection() != null && commandsManager.getConnection().isConnected()) {
+					cw.command.connected();
+				}
+				return true;
 			}
 		}
 		logger.error("Failed to start plugin: " + command + " (not found)");
@@ -217,7 +200,7 @@ public class Plugins {
 		presencePlugins.remove(cw);
 		messagePlugins.remove(cw);
 		
-		cw.command.destroy();
+		cw.destroy();
 		return true;
 	}
 
@@ -237,4 +220,31 @@ public class Plugins {
 		return Collections.unmodifiableSet(messagePlugins);
 	}
 
+	ClassLoader getClassLoader(){
+		return rootClassLoader;
+	}
+
+	private static class XmppmucClassLoader extends ClassLoader{
+
+		private Set<ClassLoader> weakHashSet;
+
+		XmppmucClassLoader(ClassLoader parrent){
+			super(parrent);
+			weakHashSet = Collections.newSetFromMap(new WeakHashMap<ClassLoader, Boolean>());
+		}
+
+		@Override
+		protected Class<?> findClass(String name) throws ClassNotFoundException{
+			for(ClassLoader cl : weakHashSet){
+				try {
+					return cl.loadClass(name);
+				} catch (ClassNotFoundException ex) {}
+			}
+			throw new ClassNotFoundException();
+		}
+
+		void addClassLoader(ClassLoader cl){
+			weakHashSet.add(cl);
+		}
+	}
 }

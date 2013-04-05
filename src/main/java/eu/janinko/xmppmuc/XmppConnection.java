@@ -136,7 +136,7 @@ public class XmppConnection {
 		logger.info("Reconnecting");
 		int retry = 1;
 		while (alive && !connect()) {
-			int sec = retry * 2 + 3;
+			long sec = retry * 2 + 3;
 			if (sec > 5 * 60) {
 				sec = 5 * 60;
 			}

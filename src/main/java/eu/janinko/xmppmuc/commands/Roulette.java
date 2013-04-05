@@ -1,32 +1,21 @@
 package eu.janinko.xmppmuc.commands;
 
-import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.Message;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 public class Roulette extends AbstractCommand{
-	private CommandWrapper cw;
-	
 	private Set<String> deadNicks;
 	private int chamber;
 	private Random random;
 	private String lastNick;
-	
-	public Roulette() {}
-	
-	public Roulette(CommandWrapper commandWrapper){
-		this.cw = commandWrapper;
-		deadNicks = new HashSet<String>();
+
+	public Roulette(){
+		deadNicks = new HashSet<>();
 		chamber = 1;
 		random = new Random();
 		lastNick = "";
-	}
-	
-	@Override
-	public Command build(CommandWrapper commandWrapper) {
-		return new Roulette(commandWrapper);
 	}
 	
 

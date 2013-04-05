@@ -1,8 +1,7 @@
 package eu.janinko.xmppmuc.listeners;
 
-import org.jivesoftware.smack.ConnectionListener;
-
 import eu.janinko.xmppmuc.XmppConnection;
+import org.jivesoftware.smack.ConnectionListener;
 
 public class XmppConnectionListener implements ConnectionListener {
 	XmppConnection connection;

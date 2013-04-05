@@ -36,13 +36,7 @@ public class ConfigManager {
 			                    .newDocumentBuilder()
 			                    .parse(fXmlFile);
 			doc.getDocumentElement().normalize();
-		} catch (SAXException e) {
-			logger.error("Failed to create ConfigManager '" + path + "'", e);
-			doc = null;
-		} catch (IOException e) {
-			logger.error("Failed to create ConfigManager '" + path + "'", e);
-			doc = null;
-		} catch (ParserConfigurationException e) {
+		} catch (SAXException | IOException | ParserConfigurationException e) {
 			logger.error("Failed to create ConfigManager '" + path + "'", e);
 			doc = null;
 		}
@@ -53,7 +47,7 @@ public class ConfigManager {
 	}
 	
 	public Map<String, String> getConfig(String attribute){
-		HashMap<String, String> ret = new HashMap<String, String>();
+		HashMap<String, String> ret = new HashMap<>();
                 
                 if(doc == null){
                     logger.error("Asking for confing but doc is null!");

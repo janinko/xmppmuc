@@ -1,13 +1,20 @@
 package eu.janinko.xmppmuc.commands;
 
+import eu.janinko.xmppmuc.CommandWrapper;
+
 /** Abstract class helping with implementing {@link Command} interface. 
  * 
  * @author Honza Brázdil <janinko.g@gmail.com>
  * @see Command
  */
 public abstract class AbstractCommand implements Command {
+	protected CommandWrapper cw;
+	protected boolean connected = false;
 	
-	public AbstractCommand(){}
+	@Override
+	public void setWrapper(CommandWrapper commandWrapper){
+		cw = commandWrapper;
+	}
 
 	@Override
 	public String help(String prefix) {
@@ -20,14 +27,13 @@ public abstract class AbstractCommand implements Command {
 	}
 
 	@Override
-	public void destroy() {
-		disconnected();
+	public void connected() {
+		connected = true;
 	}
 
 	@Override
-	public void connected() {}
-
-	@Override
-	public void disconnected() {}
+	public void disconnected() {
+		connected = false;
+	}
 
 }

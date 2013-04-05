@@ -1,22 +1,9 @@
 package eu.janinko.xmppmuc.commands;
 
-import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.Helper;
 import eu.janinko.xmppmuc.Message;
 
 public class Say extends AbstractCommand {
-	private CommandWrapper cw;
-	
-	public Say() {}
-	
-	public Say(CommandWrapper commandWrapper){
-		this.cw = commandWrapper;
-	}
-	
-	@Override
-	public Command build(CommandWrapper commandWrapper) {
-		return new Say(commandWrapper);
-	}
 
     @Override
 	public String getCommand() {

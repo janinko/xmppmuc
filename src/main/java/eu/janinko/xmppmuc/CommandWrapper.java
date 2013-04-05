@@ -1,12 +1,16 @@
 package eu.janinko.xmppmuc;
 
 import eu.janinko.xmppmuc.commands.Command;
-import eu.janinko.xmppmuc.commands.PluginBuildException;
-import eu.janinko.xmppmuc.data.PluginData;
-import eu.janinko.xmppmuc.data.PropertiesPluginData;
-import java.io.File;
+import eu.janinko.xmppmuc.data.XMLStorage;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TimerTask;
 import org.apache.log4j.Logger;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smackx.muc.Occupant;
 
 /** Middle layer between Command and MucCommands,
  * providing helpful functionality for Command.
@@ -16,14 +20,14 @@ import org.jivesoftware.smack.packet.Message;
 public class CommandWrapper {
 	private Commands commands;
 	Command command;
-	PluginData data;
+	private XMLStorage xmlstorage;
+	private HashSet<TimerTask> tasks = new HashSet<>();
 
 	private static Logger logger = Logger.getLogger(CommandWrapper.class);
 	
-	public CommandWrapper(Command c, Commands commands)  throws PluginBuildException{
+	public CommandWrapper(Command c, Commands commands){
 		this.commands = commands;
 		command = c;
-		command = c.build(this);
 	}
 
 	public Commands getCommands(){
@@ -50,30 +54,57 @@ public class CommandWrapper {
 		m.setBody(message);
 		sendPrivateMessage(nick,m);
 	}
-	
-	@Deprecated
-	public File getConfigFile(){
-		return new File(commands.getPlugins().pluginDir
-				       + command.getClass().getSimpleName()
-				       + ".conf");
-	}
-	
-	@SuppressWarnings("unchecked")
-	public PluginData getConfig(){
-		if(data == null){
-			data = new PropertiesPluginData((Class<Command>) command.getClass());
+
+	public void saveData(Object o) throws IOException{
+		if(xmlstorage == null){
+			xmlstorage = new XMLStorage(command.getClass(),commands.getPlugins().getClassLoader());
 		}
-		return data;
+		xmlstorage.save(o);
 	}
 
+	public Object loadData() {
+		if (xmlstorage == null) {
+			xmlstorage = new XMLStorage(command.getClass(),commands.getPlugins().getClassLoader());
+		}
+		try {
+			return xmlstorage.load();
+		} catch (IOException ex) {
+			logger.info("XML storage for " + command.getClass() + " cant be loaded.", ex);
+			return null;
+		}
+	}
 
-	
-	//public String hGetCommand(Message m){
-	//	return m.getBody().substring(mucc.prefix.length());
-	//}
-	
-	//public static String hGetNick(Packet p){
-	//	return p.getFrom().split("/")[1];
-	//}
+	public void startRepeatingTask(TimerTask task, long period){
+		if(tasks.contains(task)) return;
+		commands.getTimer().schedule(task, 0, period);
+		tasks.add(task);
+	}
 
+	void cancelTasks(){
+		Iterator<TimerTask> it = tasks.iterator();
+		while(it.hasNext()){
+			it.next().cancel();
+			it.remove();
+		}
+	}
+
+	void destroy() {
+		cancelTasks();
+		command.disconnected();
+	}
+
+	public Set<String> getOnlineUsers(){
+		HashSet<String> online = new HashSet<>();
+		try {
+			for(Occupant o : commands.getConnection().getMuc().getParticipants()){
+				online.add(o.getNick());
+			}
+			for(Occupant o : commands.getConnection().getMuc().getModerators()){
+				online.add(o.getNick());
+			}
+		} catch (XMPPException ex) {
+			logger.error("Couldn't fetch online occupants",ex);
+		}
+		return online;
+	}
 }
