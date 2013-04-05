@@ -1,8 +1,11 @@
-package eu.janinko.xmppmuc.commands;
+package eu.janinko.xmppmuc.commands.seen;
 
 import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.Helper;
 import eu.janinko.xmppmuc.Status;
+import eu.janinko.xmppmuc.commands.AbstractCommand;
+import eu.janinko.xmppmuc.commands.MessageCommand;
+import eu.janinko.xmppmuc.commands.PresenceCommand;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,21 +15,17 @@ import org.jivesoftware.smack.packet.Presence;
 public class Seen extends AbstractCommand implements PresenceCommand, MessageCommand {
 	private static Logger logger = Logger.getLogger(Seen.class);
 
-	private CommandWrapper cw;
-
 	private Map<String,Pritomnost> seeny;
 	private int counter = 0;
 
-	public Seen(){};
-	
-	public Seen(CommandWrapper commandWrapper){
+    @Override
+    public void setWrapper(CommandWrapper commandWrapper) {
+		super.setWrapper(commandWrapper);
 		cw = commandWrapper;
-		loadConfig();
-	}
-
-	@Override
-	public Command build(CommandWrapper cw) throws PluginBuildException {
-		return new Seen(cw);
+		seeny = (Map<String,Pritomnost>) cw.loadData();
+		if (seeny == null) {
+			seeny = new HashMap<>();
+		}
 	}
 
 	@Override
@@ -52,7 +51,7 @@ public class Seen extends AbstractCommand implements PresenceCommand, MessageCom
 
 	@Override
 	public String help(String prefix) {
-		return "Tralala";
+		return prefix + getCommand() + " nick";
 	}
 
 	@Override
@@ -70,6 +69,7 @@ public class Seen extends AbstractCommand implements PresenceCommand, MessageCom
 		}
 	}
 
+	@Override
 	public void handleMessage(eu.janinko.xmppmuc.Message m) {
 		String kdo = m.getNick();
 		org.jivesoftware.smack.packet.Message msg = m.getSmackMessage();
@@ -79,16 +79,7 @@ public class Seen extends AbstractCommand implements PresenceCommand, MessageCom
 			saveConfig();
 		}
 	}
-
-	private void loadConfig() {
-		try {
-			seeny = (Map<String,Pritomnost>) cw.loadData();
-		} catch (IOException ex) {
-			logger.warn("Can't load seend data.", ex);
-			seeny = new HashMap<String, Pritomnost>();
-		}
-	}
-
+	
 	private void saveConfig() {
 		try {
 			cw.saveData(seeny);
@@ -97,5 +88,6 @@ public class Seen extends AbstractCommand implements PresenceCommand, MessageCom
 		}
 	}
 
+	@Override
 	public void handleStatus(Status s) {}
 }

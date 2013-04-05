@@ -1,4 +1,4 @@
-package eu.janinko.xmppmuc.commands;
+package eu.janinko.xmppmuc.commands.seen;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
