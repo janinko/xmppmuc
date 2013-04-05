@@ -1,35 +1,31 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.janinko.xmppmuc.commands.dictionary;
 
 import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.Helper;
 import eu.janinko.xmppmuc.Message;
 import eu.janinko.xmppmuc.commands.AbstractCommand;
-import eu.janinko.xmppmuc.commands.Command;
-import eu.janinko.xmppmuc.commands.PluginBuildException;
-import eu.janinko.xmppmuc.data.PluginData;
+import java.io.IOException;
+import java.util.HashMap;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author jbrazdil
  */
 public class Dictionary extends AbstractCommand {
-	private CommandWrapper cw;
-	private PluginData data;
+	private static Logger logger = Logger.getLogger(Dictionary.class);
 	
-	public Dictionary(){}
-	
-	public Dictionary(CommandWrapper commandWrapper){
-		cw = commandWrapper;
-		data = cw.getConfig();
-	}
+	private HashMap<String,String> dict;
 
-	@Override
-	public Command build(CommandWrapper commandWrapper) throws PluginBuildException {
-		return new Dictionary(commandWrapper);
+    @Override
+    public void setWrapper(CommandWrapper commandWrapper) {
+		super.setWrapper(commandWrapper);
+		cw = commandWrapper;
+
+		dict = (HashMap<String, String>) cw.loadData();
+		if(dict == null){
+			dict = new HashMap<>();
+		}
 	}
 
 	@Override
@@ -43,16 +39,21 @@ public class Dictionary extends AbstractCommand {
 			cw.sendMessage(this.help(cw.getCommands().getPrefix()));
 		}else if(args.length == 2){
 			String key = args[1];
-			if(data.containsKey(key)){
-				cw.sendMessage(key + ": " + data.getValue(key));
+			if(dict.containsKey(key)){
+				cw.sendMessage(key + ": " + dict.get(key));
 			}else{
 				cw.sendMessage("A prd... prostě jsem " + key + " nenašel :/");
 			}
 		}else{
 			String key = args[1];
 			String value = Helper.implode(args, 2);
-			data.push(key, value);
+			dict.put(key, value);
+			try {
+				cw.saveData(dict);
 			cw.sendMessage(key + " = " + value);
+			} catch (IOException ex) {
+				logger.warn("Failed to save dictionary", ex);
+			}
 		}
 	}
 
