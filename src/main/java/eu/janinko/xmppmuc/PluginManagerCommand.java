@@ -23,15 +23,8 @@ public class PluginManagerCommand extends AbstractCommand {
 		switch (args[1]) {
 			case "stop":
 				logger.info("request stop command: " + args[2]);
-				if(plugins.removeCommand(args[2])){
-					cw.sendMessage("Plugin " + args[2] + " byl zastaven.");
-				}
-				break;
-			case "load":
-				logger.info("request load command: " + args[2]);
-				if(plugins.loadPlugin(args[2])){
-					cw.sendMessage("Plugin " + args[2] + " byl načten.");
-				}
+				plugins.stopPlugin(args[2]);
+				cw.sendMessage("Plugin " + args[2] + " byl zastaven.");
 				break;
 			case "start":
 				logger.info("request start command: " + args[2]);

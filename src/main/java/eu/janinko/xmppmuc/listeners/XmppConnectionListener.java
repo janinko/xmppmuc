@@ -1,23 +1,25 @@
 package eu.janinko.xmppmuc.listeners;
 
-import eu.janinko.xmppmuc.XmppConnection;
+import eu.janinko.xmppmuc.Connection;
 import org.jivesoftware.smack.ConnectionListener;
 
 public class XmppConnectionListener implements ConnectionListener {
-	XmppConnection connection;
+	Connection connection;
 	
-	public XmppConnectionListener(XmppConnection connection){
+	public XmppConnectionListener(Connection connection){
 		this.connection = connection;
 	}
 
 	@Override
 	public void connectionClosed() {
-		connection.disconnect();
+		connection.disconnected();
+		connection.reconnect();
 	}
 
 	@Override
 	public void connectionClosedOnError(Exception arg0) {
-		connection.disconnect();
+		connection.disconnected();
+		connection.reconnect();
 	}
 
 	@Override

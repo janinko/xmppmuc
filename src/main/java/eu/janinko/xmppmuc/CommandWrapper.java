@@ -1,7 +1,6 @@
 package eu.janinko.xmppmuc;
 
 import eu.janinko.xmppmuc.commands.Command;
-import eu.janinko.xmppmuc.data.XMLStorage;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,16 +34,16 @@ public class CommandWrapper {
 	}
 
 	public void sendMessage(String message) {
-		commands.getConnection().sendMessage(message);
+		commands.getRoom().sendMessage(message);
 	}
 	
 	public void sendMessage(Message message) {
-		commands.getConnection().sendsMessage(message);
+		commands.getRoom().sendsMessage(message);
 	}
 
 	public void sendPrivateMessage(String nick, Message message){
 		if(logger.isTraceEnabled()){logger.trace("Sending private message to " + nick + ": " + message.getBody());}
-		message.setTo(commands.getConnection().getRoom()+"/"+nick);
+		message.setTo(commands.getRoom().getRoom()+"/"+nick);
 		message.setType(Message.Type.chat);
 		sendMessage(message);
 	}
@@ -57,14 +56,14 @@ public class CommandWrapper {
 
 	public void saveData(Object o) throws IOException{
 		if(xmlstorage == null){
-			xmlstorage = new XMLStorage(command.getClass(),commands.getPlugins().getClassLoader());
+			xmlstorage = new XMLStorage(command.getClass(),commands.getPlugins().getManager().getClassLoader());
 		}
 		xmlstorage.save(o);
 	}
 
 	public Object loadData() {
 		if (xmlstorage == null) {
-			xmlstorage = new XMLStorage(command.getClass(),commands.getPlugins().getClassLoader());
+			xmlstorage = new XMLStorage(command.getClass(),commands.getPlugins().getManager().getClassLoader());
 		}
 		try {
 			return xmlstorage.load();
@@ -96,10 +95,10 @@ public class CommandWrapper {
 	public Set<String> getOnlineUsers(){
 		HashSet<String> online = new HashSet<>();
 		try {
-			for(Occupant o : commands.getConnection().getMuc().getParticipants()){
+			for(Occupant o : commands.getRoom().getMuc().getParticipants()){
 				online.add(o.getNick());
 			}
-			for(Occupant o : commands.getConnection().getMuc().getModerators()){
+			for(Occupant o : commands.getRoom().getMuc().getModerators()){
 				online.add(o.getNick());
 			}
 		} catch (XMPPException ex) {

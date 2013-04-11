@@ -10,31 +10,27 @@ import java.util.Timer;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smackx.muc.MultiUserChat;
 
 public class Commands {
-	private XmppConnection connection;
-	private MultiUserChat muc;
-	private Map<String,Integer> privs;
+	private Room conn;
 	private Plugins plugins;
-	private Bot bot;
-	private Timer timer;
+
+	private Map<String,Integer> privs = new HashMap<>();
+	private Timer timer = new Timer();
 	
-	String prefix = ".";
+	private String prefix = ".";
 	
 	private static Logger logger = Logger.getLogger(Commands.class);
 	
-	public Commands(Bot bot){
-		privs = new HashMap<>();
-		timer = new Timer();
-		plugins = new Plugins();
-		this.bot = bot;
+	public Commands(Plugins plugins, Room connection){
+		this.plugins = plugins;
+		this.conn = connection;
 	}
 
 	void init(){
 		plugins.setCommands(this);
-		plugins.loadPlugins();
-		plugins.loadPluginsFromConfigFile();
+		conn.setCommands(this);
+		plugins.startPlugins();
 	}
 
     /**
@@ -55,18 +51,16 @@ public class Commands {
 		this.prefix = prefix;
 	}
 
-	void setMuc(MultiUserChat muc) {
-		if(logger.isTraceEnabled()){logger.trace("Setting muc: "+muc);}
-		this.muc = muc;
-		if(muc == null){
-			plugins.disconnected();
-		}else{
-			plugins.connected();
-		}
+	void disconnected(){
+		plugins.disconnected();
+	}
+
+	void connected(){
+		plugins.connected();
 	}
 
 	public void handlePresence(Presence presence) {
-		if(muc == null) return;
+		if(!conn.conected()) return;
 
 		for(CommandWrapper cw : plugins.getPresencePlugins()){
 			PresenceCommand command = (PresenceCommand) cw.command;
@@ -76,7 +70,7 @@ public class Commands {
 	}
 
 	public void handleStatus(Status status) {
-		if(muc == null) return;
+		if(!conn.conected()) return;
 
 		for(CommandWrapper cw : plugins.getPresencePlugins()){
 			PresenceCommand command = (PresenceCommand) cw.command;
@@ -86,9 +80,9 @@ public class Commands {
 	}
 
 	public void handleMessage(Message message) {
-		if(muc == null) return;
+		if(!conn.conected()) return;
 		
-		if(message.getBody().startsWith(prefix) || message.getBody().startsWith(connection.getNick())){
+		if(message.getBody().startsWith(prefix) || message.getBody().startsWith(conn.getNick())){
 			handleCommand(message);
 			return;
 		}
@@ -100,13 +94,13 @@ public class Commands {
 	}
 
 	public void handleCommand(Message message) {
-		if(muc == null) return;
+		if(!conn.conected()) return;
 
 		String body = message.getBody();
 		if(body.startsWith(prefix)){
 			body = body.substring(prefix.length());
 		}else{ //(message.getBody().startsWith(connection.getNick()){
-			body = body.substring(connection.getNick().length());
+			body = body.substring(conn.getNick().length());
 			if(body.matches("[:>]? .*")){
 				body = body.substring(1).trim();
 			}else{
@@ -140,7 +134,7 @@ public class Commands {
 	}
 	
 	private void printHelp(String what){
-		if(muc == null) return;
+		if(!conn.conected()) return;
 
 		String help = null;
 		switch (what) {
@@ -160,11 +154,11 @@ public class Commands {
 		if(help == null){
 			help = "O tomhle ale vůbec nic nevím!";
 		}
-		connection.sendMessage(help);
+		conn.sendMessage(help);
 	}
 
 	private void printCommands(){
-		if(muc == null) return;
+		if(!conn.conected()) return;
 		
 		StringBuilder sb = new StringBuilder("Příkazy jsou: ");
 		sb.append(prefix);
@@ -177,11 +171,11 @@ public class Commands {
 			sb.append(prefix);
 			sb.append(cw.command.getCommand());
 		}
-		connection.sendMessage(sb.toString());
+		conn.sendMessage(sb.toString());
 	}
 
 	private int getPrivLevel(String usser){
-		String jid = muc.getOccupant(usser).getJid().split("/")[0].toLowerCase();
+		String jid = conn.getMuc().getOccupant(usser).getJid().split("/")[0].toLowerCase();
 		Integer priv = privs.get(jid);
 		if(priv == null) return 0;
 		return priv;
@@ -192,11 +186,11 @@ public class Commands {
 	 *
 	 * @return XmppConnection that handle connection to XMPP server and MUC.
 	 */
-	public XmppConnection getConnection() {
-		return connection;
+	public Room getRoom() {
+		return conn;
 	}
 
-	Plugins getPlugins() {
+	public Plugins getPlugins() {
 		return plugins;
 	}
 
@@ -204,20 +198,7 @@ public class Commands {
 		privs.put(userJid.toLowerCase(), decode);		
 	}
 
-	void setConnection(XmppConnection xmppConnection) {
-		this.connection = xmppConnection;
-	}
-
-    /**
-     * Returns {@link Bot} instance.
-	 *
-	 * @return Bot instance.
-	 */
-    public Bot getBot(){
-        return bot;
-    }
-
-	Timer getTimer() {
+	public Timer getTimer() {
 		return timer;
 	}
 
@@ -225,5 +206,4 @@ public class Commands {
 		timer.cancel();
 		timer = new Timer();
 	}
-
 }

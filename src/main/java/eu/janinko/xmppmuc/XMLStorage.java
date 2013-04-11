@@ -1,4 +1,4 @@
-package eu.janinko.xmppmuc.data;
+package eu.janinko.xmppmuc;
 
 import com.thoughtworks.xstream.XStream;
 import eu.janinko.xmppmuc.Bot;

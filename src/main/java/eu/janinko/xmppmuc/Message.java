@@ -24,9 +24,9 @@ public class Message {
 
 	public Chat getTarget(){
 		logger.trace(message.getThread());
-		logger.trace(commands.getConnection().connection.getChatManager().getThreadChat(message.getThread()));
-		logger.trace(commands.getConnection().connection.getChatManager().getThreadChat(message.getThread()).getParticipant());
-		return commands.getConnection().connection.getChatManager().getThreadChat(message.getThread());
+		logger.trace(commands.getRoom().getConnection().getXMPPConnection().getChatManager().getThreadChat(message.getThread()));
+		logger.trace(commands.getRoom().getConnection().getXMPPConnection().getChatManager().getThreadChat(message.getThread()).getParticipant());
+		return commands.getRoom().getConnection().getXMPPConnection().getChatManager().getThreadChat(message.getThread());
 	}
 	
 

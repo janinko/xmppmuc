@@ -29,7 +29,7 @@ public class Kill extends AbstractCommand{
 					break;
 			}
 		}
-        cw.getCommands().getBot().stop();
+		Runtime.getRuntime().exit(0);
 	}
 
 	@Override
