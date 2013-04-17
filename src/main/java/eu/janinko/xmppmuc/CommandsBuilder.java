@@ -53,6 +53,7 @@ public class CommandsBuilder {
 		if(prefix != null){
 			ret.setPrefix(prefix);
 		}
+		ret.init();
 		return ret;
 	}
 

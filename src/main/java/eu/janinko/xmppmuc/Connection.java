@@ -22,7 +22,7 @@ public class Connection {
 	private String server;
 	private String jid;
 	private String password;
-	private HashMap<String, Room> rooms;
+	private HashMap<String, Room> rooms = new HashMap<>();
 
 	private XMPPConnection connection;
 
@@ -207,5 +207,9 @@ public class Connection {
 
 	public XMPPConnection getXMPPConnection() {
 		return connection;
+	}
+
+	public boolean isActive(){
+		return recconnecting;
 	}
 }

@@ -10,6 +10,7 @@ import java.util.Timer;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 
 public class Commands {
 	private Room conn;
@@ -175,7 +176,11 @@ public class Commands {
 	}
 
 	private int getPrivLevel(String usser){
-		String jid = conn.getMuc().getOccupant(usser).getJid().split("/")[0].toLowerCase();
+		MultiUserChat muc = conn.getMuc();
+		if(muc == null) return 0; // we are not connected
+		String jid = muc.getOccupant(usser).getJid();
+		if(jid == null) return 0; // we do not have right to read jid
+		jid = jid.split("/")[0].toLowerCase(); // normalize jid
 		Integer priv = privs.get(jid);
 		if(priv == null) return 0;
 		return priv;
