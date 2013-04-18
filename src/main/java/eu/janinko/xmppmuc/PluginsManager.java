@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -53,7 +54,17 @@ public class PluginsManager {
 	}
 
 	synchronized public Class<? extends Command> getCommand(String canonicalName){
-		return plugins.get(canonicalName);
+		if(plugins.containsKey(canonicalName)){
+			return plugins.get(canonicalName);
+		}
+		try {
+			@SuppressWarnings("unchecked")
+			Class<? extends Command> clazz = (Class<? extends Command>) classLoader.loadClass(canonicalName);
+			plugins.put(clazz.getCanonicalName(), clazz);
+			return clazz;
+		} catch (ClassNotFoundException | ClassCastException ex) {
+			return null;
+		}
 	}
 
 	synchronized public void loadPlugins(){
