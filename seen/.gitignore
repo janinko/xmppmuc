@@ -1,0 +1,9 @@
+.project
+.classpath
+bin/
+build/
+lib/
+nb-configuration.xml
+nbactions-Botninko.xml
+target/
+.settings/
