@@ -4,7 +4,7 @@
 
   <groupId>eu.janinko.xmppmuc</groupId>
   <artifactId>reminder</artifactId>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
 
   <name>XMPP MUC Bot plugin Reminder</name>
   <url>http://janinko.eu/xmppmuc</url>
