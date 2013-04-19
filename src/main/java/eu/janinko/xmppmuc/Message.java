@@ -28,6 +28,4 @@ public class Message {
 		logger.trace(commands.getRoom().getConnection().getXMPPConnection().getChatManager().getThreadChat(message.getThread()).getParticipant());
 		return commands.getRoom().getConnection().getXMPPConnection().getChatManager().getThreadChat(message.getThread());
 	}
-	
-
 }

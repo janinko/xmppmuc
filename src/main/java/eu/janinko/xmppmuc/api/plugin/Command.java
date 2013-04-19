@@ -1,4 +1,4 @@
-package eu.janinko.xmppmuc.commands;
+package eu.janinko.xmppmuc.api.plugin;
 
 
 import eu.janinko.xmppmuc.CommandWrapper;

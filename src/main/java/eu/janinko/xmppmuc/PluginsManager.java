@@ -1,6 +1,6 @@
 package eu.janinko.xmppmuc;
 
-import eu.janinko.xmppmuc.commands.Command;
+import eu.janinko.xmppmuc.api.plugin.Command;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,14 +12,14 @@ import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
  * @author Honza Brázdil <jbrazdil@redhat.com>
  */
 public class PluginsManager {
-	private static final String PLUGIN_DIR = Bot.DATA_DIR + "plugins/";
+	public static final String DATA_DIR = System.getProperty("user.home") + "/.xmppmuc/";
+	private static final String PLUGIN_DIR = DATA_DIR + "plugins/";
 	private static final String PLUGIN_JAR_DIR = PLUGIN_DIR + "jar/";
 	private static Logger logger = Logger.getLogger(PluginsManager.class);
 	private HashMap<String, Class<? extends Command>> plugins = new HashMap<>();

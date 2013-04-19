@@ -1,5 +1,6 @@
 package eu.janinko.xmppmuc.commands;
 
+import eu.janinko.xmppmuc.api.plugin.AbstractCommand;
 import eu.janinko.xmppmuc.Message;
 
 public class Kill extends AbstractCommand{

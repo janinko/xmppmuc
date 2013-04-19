@@ -1,6 +1,6 @@
 package eu.janinko.xmppmuc;
 
-import eu.janinko.xmppmuc.commands.Command;
+import eu.janinko.xmppmuc.api.plugin.Command;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,6 +31,10 @@ public class CommandWrapper {
 
 	public Commands getCommands(){
 		return commands;
+	}
+
+	public void sendHelp(){
+		sendMessage(command.help(commands.getPrefix()));
 	}
 
 	public void sendMessage(String message) {

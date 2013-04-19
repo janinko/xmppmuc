@@ -1,4 +1,4 @@
-package eu.janinko.xmppmuc.commands;
+package eu.janinko.xmppmuc.api.plugin;
 
 import eu.janinko.xmppmuc.CommandWrapper;
 
@@ -35,5 +35,4 @@ public abstract class AbstractCommand implements Command {
 	public void disconnected() {
 		connected = false;
 	}
-
 }

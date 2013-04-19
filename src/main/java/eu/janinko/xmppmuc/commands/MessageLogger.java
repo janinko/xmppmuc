@@ -1,6 +1,8 @@
 package eu.janinko.xmppmuc.commands;
 
 import eu.janinko.xmppmuc.Message;
+import eu.janinko.xmppmuc.api.plugin.AbstractCommand;
+import eu.janinko.xmppmuc.api.plugin.MessageCommand;
 import org.apache.log4j.Logger;
 
 public class MessageLogger extends AbstractCommand implements MessageCommand{

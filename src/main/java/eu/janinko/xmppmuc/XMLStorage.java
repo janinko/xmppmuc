@@ -1,8 +1,7 @@
 package eu.janinko.xmppmuc;
 
 import com.thoughtworks.xstream.XStream;
-import eu.janinko.xmppmuc.Bot;
-import eu.janinko.xmppmuc.commands.Command;
+import eu.janinko.xmppmuc.api.plugin.Command;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,7 +10,7 @@ import java.io.IOException;
  * @author Honza Brázdil <jbrazdil@redhat.com>
  */
 public class XMLStorage {
-	protected static final String DATA_PATH = Bot.DATA_DIR + "plugins/data/";
+	protected static final String DATA_PATH = PluginsManager.DATA_DIR + "plugins/data/";
 
 	protected Class<? extends Command> clazz;
 	private XStream xstream;
@@ -32,5 +31,4 @@ public class XMLStorage {
 
 		return xstream.fromXML(out);
 	}
-
 }

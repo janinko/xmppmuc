@@ -1,8 +1,8 @@
 package eu.janinko.xmppmuc;
 
-import eu.janinko.xmppmuc.commands.Command;
-import eu.janinko.xmppmuc.commands.MessageCommand;
-import eu.janinko.xmppmuc.commands.PresenceCommand;
+import eu.janinko.xmppmuc.api.plugin.Command;
+import eu.janinko.xmppmuc.api.plugin.MessageCommand;
+import eu.janinko.xmppmuc.api.plugin.PresenceCommand;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -163,5 +163,9 @@ public class Plugins {
 
 	public PluginsManager getManager() {
 		return pm;
+	}
+
+	public void reload() {
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 }

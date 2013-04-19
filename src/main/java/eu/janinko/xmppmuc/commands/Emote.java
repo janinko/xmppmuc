@@ -2,6 +2,7 @@ package eu.janinko.xmppmuc.commands;
 
 import eu.janinko.xmppmuc.Helper;
 import eu.janinko.xmppmuc.Message;
+import eu.janinko.xmppmuc.api.plugin.AbstractCommand;
 
 public class Emote extends AbstractCommand{
 	
@@ -12,10 +13,13 @@ public class Emote extends AbstractCommand{
 
     @Override
 	public void handle(Message m, String[] args) {
-		if(args.length == 1){
-			cw.sendMessage("/me zije");
-		}else{
-			cw.sendMessage("/me " + Helper.implode(args,1));
+		switch(args.length){
+			case 0:
+			case 1:
+				cw.sendMessage("/me zije");
+				return;
+			default: // >1
+				cw.sendMessage("/me " + Helper.implode(args,1));
 		}
 	}
 

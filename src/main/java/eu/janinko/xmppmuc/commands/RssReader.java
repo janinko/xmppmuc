@@ -1,5 +1,6 @@
 package eu.janinko.xmppmuc.commands;
 
+import eu.janinko.xmppmuc.api.plugin.AbstractCommand;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;

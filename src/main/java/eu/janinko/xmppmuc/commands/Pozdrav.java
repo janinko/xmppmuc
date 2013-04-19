@@ -1,5 +1,7 @@
 package eu.janinko.xmppmuc.commands;
 
+import eu.janinko.xmppmuc.api.plugin.AbstractCommand;
+import eu.janinko.xmppmuc.api.plugin.PresenceCommand;
 import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.Message;
 import eu.janinko.xmppmuc.Status;
