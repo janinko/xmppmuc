@@ -3,7 +3,7 @@ package eu.janinko.xmppmuc.commands.dictionary;
 import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.Helper;
 import eu.janinko.xmppmuc.Message;
-import eu.janinko.xmppmuc.commands.AbstractCommand;
+import eu.janinko.xmppmuc.api.plugin.AbstractCommand;
 import java.io.IOException;
 import java.util.HashMap;
 import org.apache.log4j.Logger;

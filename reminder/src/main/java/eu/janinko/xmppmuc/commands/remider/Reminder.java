@@ -3,10 +3,9 @@ package eu.janinko.xmppmuc.commands.remider;
 import eu.janinko.xmppmuc.CommandWrapper;
 import eu.janinko.xmppmuc.Helper;
 import eu.janinko.xmppmuc.Message;
-import eu.janinko.xmppmuc.PluginManagerCommand;
 import eu.janinko.xmppmuc.Status;
-import eu.janinko.xmppmuc.commands.AbstractCommand;
-import eu.janinko.xmppmuc.commands.PresenceCommand;
+import eu.janinko.xmppmuc.api.plugin.AbstractCommand;
+import eu.janinko.xmppmuc.api.plugin.PresenceCommand;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import org.apache.log4j.Logger;
 import org.jivesoftware.smack.packet.Presence;
 
 public class Reminder extends AbstractCommand implements PresenceCommand {
-	private static Logger logger = Logger.getLogger(PluginManagerCommand.class);
+	private static Logger logger = Logger.getLogger(Reminder.class);
 
 	private HashMap<String,Notes> notes;
 
